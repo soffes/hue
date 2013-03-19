@@ -20,7 +20,11 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+``` ruby
+> client = Hue::Client.new
+> light = client.lights.first
+> light.on = true
+```
 
 ## Contributing
 
