@@ -1,9 +1,8 @@
 require 'hue/version'
+require 'hue/errors'
 require 'hue/client'
 require 'hue/light'
 
 module Hue
-  class Error < Exception; end
-  class NoBaseStationFound < Error; end
-  class ButtonNotPressed < Error; end
+  USERNAME_RANGE = 10..40
 end

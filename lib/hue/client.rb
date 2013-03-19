@@ -5,7 +5,11 @@ module Hue
   class Client
     attr_reader :username
 
-    def initialize(username = 'huerubygem')
+    def initialize(username = '1234567890')
+      unless USERNAME_RANGE.include?(username.length)
+        raise InvalidUsername, "Usernames must be between #{USERNAME_RANGE.first} and #{USERNAME_RANGE.last}."
+      end
+
       @username = username
       validate_user
     end
@@ -37,27 +41,40 @@ module Hue
     def validate_user
       response = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge_ip}/api/#{@username}")))
       if error = response['error']
-        register_user and return  if error['type'] == 1
-        raise Error, error['description']
+        parse_error(error)
       end
       response['success']
     end
 
     def register_user
       body = {
-        devicetype: 'test user',
-        username: @usernamename
+        devicetype: 'Ruby',
+        username: @username
       }
-      response = MultiJson.load(Net::HTTP.post(URI.parse("http://#{bridge_ip}/api"), MultiJson.dump(body))).first
+
+      uri = URI.parse("http://#{bridge_ip}/api")
+      http = Net::HTTP.new(uri.hostname)
+      response = MultiJson.load(http.request_post(uri.path, MultiJson.dump(body)).body).first
+
       if error = response['error']
-        raise ButtonNotPressed and return if error['type'] == 101
-        raise Error, error['description']
+        parse_error(error)
       end
       response['success']
     end
 
     def bridge_ip
       base_station['internalipaddress']
+    end
+
+    def parse_error(error)
+      # Find error or return
+      klass = Hue::ERROR_MAP[error['type']]
+      klass = UnknownError unless klass
+
+      # Raise error
+      raise klass.new(error['description'])
+    rescue  Hue::UnauthorizedUser
+      register_user
     end
   end
 end
