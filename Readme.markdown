@@ -7,7 +7,7 @@ Work with Philips Hue light bulbs from Ruby.
 Add this line to your application's Gemfile:
 
 ``` ruby
-gem 'sonos'
+gem 'hue'
 ```
 
 And then execute:
@@ -19,7 +19,7 @@ $ bundle
 Or install it yourself as:
 
 ``` shell
-$ gem install sonos
+$ gem install hue
 
 ## Usage
 
