@@ -4,21 +4,14 @@ Work with Philips Hue light bulbs from Ruby.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-``` ruby
-gem 'hue'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install hue
+This gem is currently unreleased. For now, simply clone the repository.
 
 ## Usage
+
+``` shell
+$ git clone https://github.com/soffes/hue.git
+$ irb -Ihue/lib -rhue
+```
 
 ``` ruby
 > client = Hue::Client.new
