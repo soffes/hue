@@ -4,14 +4,35 @@ Work with Philips Hue light bulbs from Ruby.
 
 ## Installation
 
-This gem is currently unreleased. For now, simply clone the repository.
+Add this line to your application's Gemfile:
+
+``` ruby
+gem 'sonos'
+```
+
+And then execute:
+
+``` shell
+$ bundle
+```
+
+Or install it yourself as:
+
+``` shell
+$ gem install sonos
 
 ## Usage
 
+The first time you use it, it will automatically create a user for you. Doing this requires you to have pushed the button on your bridge in the last 30 seconds. If you haven't it will throw an exception and let you know you need to push the button. Simply press the button and run the command again.
+
+From CLI:
+
 ``` shell
-$ git clone https://github.com/soffes/hue.git
-$ irb -Ihue/lib -rhue
+$ hue all on
+$ hue all off
 ```
+
+From Ruby:
 
 ``` ruby
 > client = Hue::Client.new
