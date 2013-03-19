@@ -9,6 +9,14 @@ module Hue
       end
     end
 
+    desc 'all STATE', 'Send commands to all lights'
+    def all(state)
+      on = state == 'on'
+      client.lights.each do |light|
+        light.on = on
+      end
+    end
+
   private
 
     def client
