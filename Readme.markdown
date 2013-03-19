@@ -20,6 +20,7 @@ Or install it yourself as:
 
 ``` shell
 $ gem install hue
+```
 
 ## Usage
 
