@@ -1,7 +1,7 @@
 module Hue
   class Light
     attr_reader :id
-    attr_reader :name
+    attr_accessor :name
     attr_reader :state
     attr_reader :type
     attr_reader :model
@@ -13,6 +13,26 @@ module Hue
       @id = id
       @name = name
       refresh
+    end
+
+    def name=(new_name)
+      unless 1..32.include?(new_name.length)
+        raise InvalidValueForParameter, 'name must be between 1 and 32 characters.'
+      end
+
+      body = {
+        :name => new_name
+      }
+
+      uri = URI.parse(base_url)
+      http = Net::HTTP.new(uri.hostname)
+      response = http.request_put(uri.path, MultiJson.dump(body))
+      response = MultiJson.load(response.body).first
+      if response['success']
+        @name = new_name
+      # else
+        # TODO: Error
+      end
     end
 
     def on?
@@ -34,15 +54,13 @@ module Hue
 
       if on
         body.merge!({
-          hue: hue,
-          sat: saturation,
-          bri: brightness
+          :hue => hue,
+          :sat => saturation,
+          :bri => brightness
         })
       end
 
-      bridge_ip = @client.base_station['internalipaddress']
-      uri = URI.parse("http://#{bridge_ip}/api/#{@client.username}/lights/#{self.id}/state")
-
+      uri = URI.parse("#{base_url}/state")
       http = Net::HTTP.new(uri.hostname)
       response = http.request_put(uri.path, MultiJson.dump(body))
       MultiJson.load(response.body)
@@ -50,10 +68,13 @@ module Hue
 
   private
 
-    def refresh
+    def base_url
       bridge_ip = @client.base_station['internalipaddress']
-      uri = URI.parse("http://#{bridge_ip}/api/#{@client.username}/lights/#{self.id}")
-      json = MultiJson.load(Net::HTTP.get(uri))
+      "http://#{bridge_ip}/api/#{@client.username}/lights/#{self.id}"
+    end
+
+    def refresh
+      json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
 
       @state = json['state']
       @type = json['type']
