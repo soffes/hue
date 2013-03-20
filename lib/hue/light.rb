@@ -78,7 +78,7 @@ module Hue
     end
 
     def name=(new_name)
-      unless 1..32.include?(new_name.length)
+      unless (1..32).include?(new_name.length)
         raise InvalidValueForParameter, 'name must be between 1 and 32 characters.'
       end
 
