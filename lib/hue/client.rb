@@ -36,6 +36,10 @@ module Hue
       end
     end
 
+    def light(id)
+      self.lights.select { |l| l.id == id }.first
+    end
+
   private
 
     def validate_user

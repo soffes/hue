@@ -17,6 +17,15 @@ module Hue
       end
     end
 
+    desc 'light ID STATE', 'Access a light'
+    def light(id, state = nil)
+      light = client.light(id)
+      puts light.name
+      if state
+        light.set_state(state == 'on')
+      end
+    end
+
   private
 
     def client
