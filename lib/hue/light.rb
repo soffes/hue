@@ -56,7 +56,7 @@ module Hue
     # Saturation, `xy` for XY and `ct` for Color Temperature. This
     # parameter is only present when the light supports at least one
     # of the values.
-    attr_reader :colormode
+    attr_reader :color_mode
 
     # A fixed name describing the type of light.
     attr_reader :type
@@ -116,22 +116,15 @@ module Hue
       @state['reachable']
     end
 
-    def set_state(on, hue = nil, saturation = nil, brightness = nil)
-      body = {
-        on: on
-      }
+    def set_state(attributes, transition = 400)
+      # TODO: Translate keys
 
-      if on
-        body.merge!({
-          :hue => hue,
-          :sat => saturation,
-          :bri => brightness
-        })
-      end
+      # Add transition
+      attributes.merge!({:transitiontime => transition})
 
       uri = URI.parse("#{base_url}/state")
       http = Net::HTTP.new(uri.hostname)
-      response = http.request_put(uri.path, MultiJson.dump(body))
+      response = http.request_put(uri.path, MultiJson.dump(attributes))
       MultiJson.load(response.body)
     end
 
@@ -146,6 +139,14 @@ module Hue
       json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
 
       @state = json['state']
+      @brightness = @state['Bri']
+      @hue = @state['hue']
+      @saturation = @state['Sat']
+      @xy = @state['xy']
+      @color_temperature = @state['ct']
+      @alert = @state['alert']
+      @effect = @state['effect']
+      @color_mode = @state['colormode']
       @type = json['type']
       @name = json['name']
       @model = json['modelid']
