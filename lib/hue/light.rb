@@ -8,6 +8,9 @@ module Hue
     # Unique identification number.
     attr_reader :id
 
+    # Bridge the light is associated with
+    attr_reader :bridge
+
     # A unique, editable name given to the light.
     attr_accessor :name
 
@@ -78,10 +81,11 @@ module Hue
     # Reserved for future functionality.
     attr_reader :point_symbol
 
-    def initialize(client, id, hash)
+    def initialize(client, bridge, id, hash)
       @client = client
+      @bridge = bridge
       @id = id
-      unpack_hash(hash)
+      unpack(hash)
     end
 
     def name=(new_name)
@@ -128,9 +132,9 @@ module Hue
     end
 
     # @param transition The duration of the transition from the light’s current
-    #   state to the new state. This is given as a multiple of 100ms and defaults
-    #   to 4 (400ms). For example, setting transistiontime:10 will make the
-    #   transition last 1 second.
+    #   state to the new state. This is given as a multiple of 100ms and
+    #   defaults to 4 (400ms). For example, setting transistiontime:10 will
+    #   make the transition last 1 second.
     def set_state(attributes, transition = nil)
       body = translate_keys(attributes)
 
@@ -146,19 +150,31 @@ module Hue
     # Refresh the state of the lamp
     def refresh
       json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
-      unpack_hash(json)
+      unpack(json)
     end
 
   private
 
     KEYS_MAP = {
+      :state => :state,
+      :type => :type,
+      :name => :name,
       :model => :modelid,
       :software_version => :swversion,
-      :point_symbol => :pointsymbol,
+      :point_symbol => :pointsymbol
+    }
+
+    STATE_KEYS_MAP = {
+      :on => :on,
       :brightness => :bri,
+      :hue => :hue,
       :saturation => :sat,
+      :xy => :xy,
       :color_temperature => :ct,
-      :color_mode => :colormode
+      :alert => :alert,
+      :effect => :effect,
+      :color_mode => :colormode,
+      :reachable => :reachable,
     }
 
     def translate_keys(hash)
@@ -171,28 +187,22 @@ module Hue
       new_hash
     end
 
-    def unpack_hash(hash)
-      %w{state type name model software_version point_symbol}.each do |key|
-        value = hash[(KEYS_MAP[key.to_sym] || key).to_s]
-        next unless value
-        instance_variable_set("@#{key}", value)
-      end
-      unpack_state(@state)
+    def unpack(hash)
+      unpack_hash(hash, KEYS_MAP)
+      unpack_hash(@state, STATE_KEYS_MAP)
+      @x, @y = @state['xy']
     end
 
-    def unpack_state(hash)
-      %w{brightness hue saturation color_temperature alert effect color_mode}.each do |key|
-        value = hash[(KEYS_MAP[key.to_sym] || key).to_s]
+    def unpack_hash(hash, map)
+      map.each do |local_key, remote_key|
+        value = hash[remote_key.to_s]
         next unless value
-        instance_variable_set("@#{key}", value)
+        instance_variable_set("@#{local_key}", value)
       end
-
-      @x, @y = hash['xy']
     end
 
     def base_url
-      bridge_ip = @client.bridge['internalipaddress']
-      "http://#{bridge_ip}/api/#{@client.username}/lights/#{id}"
+      "http://#{@bridge.ip}/api/#{@client.username}/lights/#{id}"
     end
   end
 end

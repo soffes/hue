@@ -22,15 +22,21 @@ module Hue
     end
 
     def bridges
-      @bridges ||= MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp')))
+      @bridges ||= begin
+        bs = []
+        MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp'))).each do |hash|
+          bs << Bridge.new(self, hash)
+        end
+        bs
+      end
     end
 
     def lights
       @lights ||= begin
         ls = []
-        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge_ip}/api/#{@username}")))
+        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
         json['lights'].each do |key, value|
-          ls << Light.new(self, key, value)
+          ls << Light.new(self, bridge, key, value)
         end
         ls
       end
@@ -43,7 +49,7 @@ module Hue
   private
 
     def validate_user
-      response = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge_ip}/api/#{@username}")))
+      response = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
       if error = response['error']
         parse_error(error)
       end
@@ -56,7 +62,7 @@ module Hue
         username: @username
       }
 
-      uri = URI.parse("http://#{bridge_ip}/api")
+      uri = URI.parse("http://#{bridge.ip}/api")
       http = Net::HTTP.new(uri.hostname)
       response = MultiJson.load(http.request_post(uri.path, MultiJson.dump(body)).body).first
 
@@ -64,10 +70,6 @@ module Hue
         parse_error(error)
       end
       response['success']
-    end
-
-    def bridge_ip
-      bridge['internalipaddress']
     end
 
     def parse_error(error)

@@ -1,6 +1,7 @@
 require 'hue/version'
 require 'hue/errors'
 require 'hue/client'
+require 'hue/bridge'
 require 'hue/light'
 
 module Hue
