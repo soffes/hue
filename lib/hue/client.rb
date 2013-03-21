@@ -14,15 +14,15 @@ module Hue
       validate_user
     end
 
-    def base_station
+    def bridge
       # Pick the first one for now. In theory, they should all do the same thing.
-      base_station = base_stations.first
-      raise NoBaseStationFound unless base_station
-      base_station
+      bridge = bridges.first
+      raise NoBridgeFound unless bridge
+      bridge
     end
 
-    def base_stations
-      @base_stations ||= MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp')))
+    def bridges
+      @bridges ||= MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp')))
     end
 
     def lights
@@ -67,7 +67,7 @@ module Hue
     end
 
     def bridge_ip
-      base_station['internalipaddress']
+      bridge['internalipaddress']
     end
 
     def parse_error(error)

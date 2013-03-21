@@ -17,6 +17,7 @@ module Hue
 
   class InvalidUsername < Error; end
   class UnknownError < Error; end
+  class NoBridgeFound < Error; end
 
   # Status code to exception map
   ERROR_MAP = {

@@ -191,7 +191,7 @@ module Hue
     end
 
     def base_url
-      bridge_ip = @client.base_station['internalipaddress']
+      bridge_ip = @client.bridge['internalipaddress']
       "http://#{bridge_ip}/api/#{@client.username}/lights/#{id}"
     end
   end
