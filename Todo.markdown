@@ -7,5 +7,4 @@
 * Effects
 * User management
 * Configuration
-* More efficient calls
 * Local UPNP

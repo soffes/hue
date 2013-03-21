@@ -78,15 +78,10 @@ module Hue
     # Reserved for future functionality.
     attr_reader :point_symbol
 
-    def initialize(client, id, name)
+    def initialize(client, id, hash)
       @client = client
       @id = id
-      @name = name
-      refresh
-    end
-
-    def [](index)
-      lights[index]
+      unpack_hash(hash)
     end
 
     def name=(new_name)
@@ -151,19 +146,7 @@ module Hue
     # Refresh the state of the lamp
     def refresh
       json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
-      %w{state type name model software_version point_symbol}.each do |key|
-        json_key = KEYS_MAP[key.to_sym]
-        json_key = key.to_s unless json_key
-        instance_variable_set("@#{key}", json[json_key.to_s])
-      end
-
-      %w{brightness hue saturation color_temperature alert effect color_mode}.each do |key|
-        json_key = KEYS_MAP[key.to_sym]
-        json_key = key.to_s unless json_key
-        instance_variable_set("@#{key}", @state[json_key.to_s])
-      end
-
-      @x, @y = @state['xy']
+      unpack_hash(json)
     end
 
   private
@@ -180,12 +163,31 @@ module Hue
 
     def translate_keys(hash)
       new_hash = {}
-      attributes.each do |key, value|
+      hash.each do |key, value|
         new_key = KEYS_MAP[key.to_sym]
         key = new_key if new_key
         new_hash[key] = value
       end
       new_hash
+    end
+
+    def unpack_hash(hash)
+      %w{state type name model software_version point_symbol}.each do |key|
+        value = hash[(KEYS_MAP[key.to_sym] || key).to_s]
+        next unless value
+        instance_variable_set("@#{key}", value)
+      end
+      unpack_state(@state)
+    end
+
+    def unpack_state(hash)
+      %w{brightness hue saturation color_temperature alert effect color_mode}.each do |key|
+        value = hash[(KEYS_MAP[key.to_sym] || key).to_s]
+        next unless value
+        instance_variable_set("@#{key}", value)
+      end
+
+      @x, @y = hash['xy']
     end
 
     def base_url
