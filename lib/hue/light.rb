@@ -145,7 +145,7 @@ module Hue
 
       body = {}
       attributes.each do |key, value|
-        new_key = map[key]
+        new_key = map[key.to_sym]
         key = new_key if new_key
         body[key] = value
       end

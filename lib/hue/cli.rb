@@ -18,12 +18,16 @@ module Hue
     end
 
     desc 'light ID STATE', 'Access a light'
+    option :hue, :type => :numeric
+    option :saturation, :type => :numeric
+    option :brightness, :type => :numeric
     def light(id, state = nil)
       light = client.light(id)
       puts light.name
-      if state
-        light.set_state(state == 'on')
-      end
+
+      body = options.dup
+      body[:on] = state unless state.nil?
+      light.set_state(body) if body.length > 0
     end
 
   private
