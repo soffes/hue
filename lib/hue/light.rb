@@ -137,18 +137,7 @@ module Hue
     #   to 4 (400ms). For example, setting transistiontime:10 will make the
     #   transition last 1 second.
     def set_state(attributes, transition = nil)
-      map = {
-        :brightness => :bri,
-        :saturation => :sat,
-        :color_temperature => :ct,
-      }
-
-      body = {}
-      attributes.each do |key, value|
-        new_key = map[key.to_sym]
-        key = new_key if new_key
-        body[key] = value
-      end
+      body = translate_keys(attributes)
 
       # Add transition
       body.merge!({:transitiontime => transition}) if transition
@@ -162,24 +151,42 @@ module Hue
     # Refresh the state of the lamp
     def refresh
       json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
+      %w{state type name model software_version point_symbol}.each do |key|
+        json_key = KEYS_MAP[key.to_sym]
+        json_key = key.to_s unless json_key
+        instance_variable_set("@#{key}", json[json_key.to_s])
+      end
 
-      @state = json['state']
-      @brightness = @state['bri']
-      @hue = @state['hue']
-      @saturation = @state['sat']
+      %w{brightness hue saturation color_temperature alert effect color_mode}.each do |key|
+        json_key = KEYS_MAP[key.to_sym]
+        json_key = key.to_s unless json_key
+        instance_variable_set("@#{key}", @state[json_key.to_s])
+      end
+
       @x, @y = @state['xy']
-      @color_temperature = @state['ct']
-      @alert = @state['alert'].to_sym
-      @effect = @state['effect'].to_sym
-      @color_mode = @state['colormode']
-      @type = json['type']
-      @name = json['name']
-      @model = json['modelid']
-      @software_version = json['swversion']
-      @point_symbol = json['pointsymbol']
     end
 
   private
+
+    KEYS_MAP = {
+      :model => :modelid,
+      :software_version => :swversion,
+      :point_symbol => :pointsymbol,
+      :brightness => :bri,
+      :saturation => :sat,
+      :color_temperature => :ct,
+      :color_mode => :colormode
+    }
+
+    def translate_keys(hash)
+      new_hash = {}
+      attributes.each do |key, value|
+        new_key = KEYS_MAP[key.to_sym]
+        key = new_key if new_key
+        new_hash[key] = value
+      end
+      new_hash
+    end
 
     def base_url
       bridge_ip = @client.base_station['internalipaddress']
