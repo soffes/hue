@@ -98,7 +98,7 @@ module Hue
       }
 
       uri = URI.parse(base_url)
-      http = Net::HTTP.new(uri.hostname)
+      http = Net::HTTP.new(uri.host)
       response = http.request_put(uri.path, MultiJson.dump(body))
       response = MultiJson.load(response.body).first
       if response['success']
@@ -142,7 +142,7 @@ module Hue
       body.merge!({:transitiontime => transition}) if transition
 
       uri = URI.parse("#{base_url}/state")
-      http = Net::HTTP.new(uri.hostname)
+      http = Net::HTTP.new(uri.host)
       response = http.request_put(uri.path, MultiJson.dump(body))
       MultiJson.load(response.body)
     end
