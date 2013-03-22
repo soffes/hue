@@ -63,7 +63,7 @@ module Hue
       }
 
       uri = URI.parse("http://#{bridge.ip}/api")
-      http = Net::HTTP.new(uri.hostname)
+      http = Net::HTTP.new(uri.host)
       response = MultiJson.load(http.request_post(uri.path, MultiJson.dump(body)).body).first
 
       if error = response['error']
