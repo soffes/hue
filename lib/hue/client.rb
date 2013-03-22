@@ -50,6 +50,11 @@ module Hue
 
     def validate_user
       response = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+
+      if response.is_a? Array
+        response = response.first
+      end
+
       if error = response['error']
         parse_error(error)
       end
