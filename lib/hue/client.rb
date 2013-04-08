@@ -46,6 +46,22 @@ module Hue
       self.lights.select { |l| l.id == id }.first
     end
 
+    def groups
+      @groups ||= begin
+        # Group 0 is not returned in API v1.0 requests
+        gs = [Group.new(self, bridge, "0", {"action" => {}, "name" => "All"})]
+        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}/groups")))
+        json.each do |key, value|
+          gs << Group.new(self, bridge, key, value).refresh
+        end
+        gs
+      end
+    end
+
+    def group(id = "0")
+      self.groups.select { |g| g.id == id }.first
+    end
+
   private
 
     def validate_user
