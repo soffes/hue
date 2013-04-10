@@ -2,6 +2,7 @@ require 'hue/version'
 require 'hue/errors'
 require 'hue/client'
 require 'hue/bridge'
+require 'hue/controllable'
 require 'hue/light'
 require 'hue/group'
 
