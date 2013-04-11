@@ -12,9 +12,7 @@ module Hue
     desc 'all STATE', 'Send commands to all lights'
     def all(state)
       on = state == 'on'
-      client.lights.each do |light|
-        light.on = on
-      end
+      client.group("0").on = on
     end
 
     desc 'light ID STATE', 'Access a light'
