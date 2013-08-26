@@ -25,17 +25,25 @@ module Hue
       end
     end
 
-    desc 'light ID STATE', 'Access a light'
+    desc 'light ID STATE [COLOR]', 'Access a light'
+    long_desc <<-LONGDESC
+    Examples: \n
+      hue light 1 on --hue 12345  \n
+      hue light 1 --bri 25 \n
+      hue light 1 --alert lselect \n
+      hue light 1 off
+    LONGDESC
     option :hue, :type => :numeric
-    option :saturation, :type => :numeric
-    option :brightness, :type => :numeric
+    option :sat, :type => :numeric
+    option :bri, :type => :numeric
+    option :alert, :type => :string
     def light(id, state = nil)
       light = client.light(id)
       puts light.name
 
       body = options.dup
-      body[:on] = state unless state.nil?
-      light.set_state(body) if body.length > 0
+      body[:on] = (state == 'on' || !(state == 'off'))
+      puts light.set_state(body) if body.length > 0
     end
 
   private
