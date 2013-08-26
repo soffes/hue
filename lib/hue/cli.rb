@@ -9,6 +9,14 @@ module Hue
       end
     end
 
+    desc 'add LIGHTS', 'Search for new lights'
+    def add(thing)
+      case thing
+      when 'lights'
+        client.add_lights
+      end
+    end
+
     desc 'all STATE', 'Send commands to all lights'
     def all(state)
       on = state == 'on'

@@ -42,6 +42,13 @@ module Hue
       end
     end
 
+    def add_lights
+      uri = URI.parse("http://#{bridge.ip}/api/#{@username}/lights")
+      http = Net::HTTP.new(uri.host)
+      response = http.request_post(uri.path, nil)
+      MultiJson.load(response.body).first
+    end
+
     def light(id)
       self.lights.select { |l| l.id == id }.first
     end
