@@ -180,7 +180,7 @@ module Hue
     def translate_keys(hash)
       new_hash = {}
       hash.each do |key, value|
-        new_key = KEYS_MAP[key.to_sym]
+        new_key = STATE_KEYS_MAP[key.to_sym]
         key = new_key if new_key
         new_hash[key] = value
       end
