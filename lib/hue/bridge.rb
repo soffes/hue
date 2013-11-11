@@ -85,7 +85,6 @@ module Hue
     }
 
     def unpack(hash)
-      puts hash
       KEYS_MAP.each do |local_key, remote_key|
         value = hash[remote_key.to_s]
         next unless value
