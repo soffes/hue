@@ -112,7 +112,7 @@ module Hue
       @state['on']
     end
 
-    %w{on hue saturation brightness color_temperature}.each do |key|
+    %w{on hue saturation brightness color_temperature alert}.each do |key|
       define_method "#{key}=".to_sym do |value|
         set_state({key.to_sym => value})
         instance_variable_set("@#{key}".to_sym, value)
