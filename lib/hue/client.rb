@@ -32,21 +32,11 @@ module Hue
     end
 
     def lights
-      @lights ||= begin
-        ls = []
-        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
-        json['lights'].each do |key, value|
-          ls << Light.new(self, bridge, key, value)
-        end
-        ls
-      end
+      bridge.lights
     end
 
     def add_lights
-      uri = URI.parse("http://#{bridge.ip}/api/#{@username}/lights")
-      http = Net::HTTP.new(uri.host)
-      response = http.request_post(uri.path, nil)
-      MultiJson.load(response.body).first
+      bridge.add_lights
     end
 
     def light(id)

@@ -68,6 +68,22 @@ module Hue
       unpack(json)
     end
 
+    def lights
+      @lights ||= begin
+        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{ip}/api/#{@client.username}")))
+        json['lights'].map do |key, value|
+          Light.new(@client, self, key, value)
+        end
+      end
+    end
+
+    def add_lights
+      uri = URI.parse("http://#{ip}/api/#{@client.username}/lights")
+      http = Net::HTTP.new(uri.host)
+      response = http.request_post(uri.path, nil)
+      MultiJson.load(response.body).first
+    end
+
   private
 
     KEYS_MAP = {
