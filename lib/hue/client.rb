@@ -24,7 +24,7 @@ module Hue
     def bridges
       @bridges ||= begin
         bs = []
-        MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp'))).each do |hash|
+        MultiJson.load(Hue::HTTP.new('http://www.meethue.com/api/nupnp').fetch).each do |hash|
           bs << Bridge.new(self, hash)
         end
         bs
