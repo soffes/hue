@@ -19,6 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.required_ruby_version = '>= 1.8.7'
-  spec.add_dependency 'multi_json'
   spec.add_dependency 'thor'
+  spec.add_dependency 'json'
 end

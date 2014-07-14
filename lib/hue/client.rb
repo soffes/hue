@@ -1,5 +1,5 @@
 require 'net/http'
-require 'multi_json'
+require 'json'
 
 module Hue
   class Client
@@ -24,7 +24,7 @@ module Hue
     def bridges
       @bridges ||= begin
         bs = []
-        MultiJson.load(Net::HTTP.get(URI.parse('http://www.meethue.com/api/nupnp'))).each do |hash|
+        JSON(Net::HTTP.get(URI.parse('https://www.meethue.com/api/nupnp'))).each do |hash|
           bs << Bridge.new(self, hash)
         end
         bs
@@ -46,7 +46,7 @@ module Hue
   private
 
     def validate_user
-      response = MultiJson.load(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+      response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
 
       if response.is_a? Array
         response = response.first
@@ -66,7 +66,7 @@ module Hue
 
       uri = URI.parse("http://#{bridge.ip}/api")
       http = Net::HTTP.new(uri.host)
-      response = MultiJson.load(http.request_post(uri.path, MultiJson.dump(body)).body).first
+      response = JSON(http.request_post(uri.path, JSON.dump(body)).body).first
 
       if error = response['error']
         parse_error(error)

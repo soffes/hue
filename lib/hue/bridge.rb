@@ -70,7 +70,7 @@ module Hue
 
     def lights
       @lights ||= begin
-        json = MultiJson.load(Net::HTTP.get(URI.parse("http://#{ip}/api/#{@client.username}")))
+        json = JSON(Net::HTTP.get(URI.parse("http://#{ip}/api/#{@client.username}")))
         json['lights'].map do |key, value|
           Light.new(@client, self, key, value)
         end
@@ -81,7 +81,7 @@ module Hue
       uri = URI.parse("http://#{ip}/api/#{@client.username}/lights")
       http = Net::HTTP.new(uri.host)
       response = http.request_post(uri.path, nil)
-      MultiJson.load(response.body).first
+      (response.body).first
     end
 
   private
@@ -109,7 +109,7 @@ module Hue
     end
 
     def get_configuration
-      MultiJson.load(Net::HTTP.get(URI.parse("#{base_url}/config")))
+      JSON(Net::HTTP.get(URI.parse("#{base_url}/config")))
     end
 
     def base_url

@@ -99,8 +99,8 @@ module Hue
 
       uri = URI.parse(base_url)
       http = Net::HTTP.new(uri.host)
-      response = http.request_put(uri.path, MultiJson.dump(body))
-      response = MultiJson.load(response.body).first
+      response = http.request_put(uri.path, JSON.dump(body))
+      response = JSON(response.body).first
       if response['success']
         @name = new_name
       # else
@@ -143,13 +143,13 @@ module Hue
 
       uri = URI.parse("#{base_url}/state")
       http = Net::HTTP.new(uri.host)
-      response = http.request_put(uri.path, MultiJson.dump(body))
-      MultiJson.load(response.body)
+      response = http.request_put(uri.path, JSON.dump(body))
+      JSON(response.body)
     end
 
     # Refresh the state of the lamp
     def refresh
-      json = MultiJson.load(Net::HTTP.get(URI.parse(base_url)))
+      json = JSON(Net::HTTP.get(URI.parse(base_url)))
       unpack(json)
     end
 
