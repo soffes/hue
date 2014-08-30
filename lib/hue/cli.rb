@@ -34,8 +34,8 @@ module Hue
       hue light 1 off
     LONGDESC
     option :hue, :type => :numeric
-    option :sat, :type => :numeric
-    option :bri, :type => :numeric
+    option :sat, :type => :numeric, :aliases => '--saturation'
+    option :bri, :type => :numeric, :aliases => '--brightness'
     option :alert, :type => :string
     def light(id, state = nil)
       light = client.light(id)
