@@ -11,7 +11,12 @@ module Hue
       end
 
       @username = username
-      validate_user
+
+      begin
+        validate_user
+      rescue Hue::UnauthorizedUser
+        register_user
+      end
     end
 
     def bridge
@@ -43,46 +48,45 @@ module Hue
       self.lights.select { |l| l.id == id }.first
     end
 
+
   private
 
-    def validate_user
-      response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+  def validate_user
+    response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
 
-      if response.is_a? Array
-        response = response.first
-      end
-
-      if error = response['error']
-        parse_error(error)
-      end
-      response['success']
+    if response.is_a? Array
+      response = response.first
     end
 
-    def register_user
-      body = {
-        devicetype: 'Ruby',
-        username: @username
-      }
-
-      uri = URI.parse("http://#{bridge.ip}/api")
-      http = Net::HTTP.new(uri.host)
-      response = JSON(http.request_post(uri.path, JSON.dump(body)).body).first
-
-      if error = response['error']
-        parse_error(error)
-      end
-      response['success']
+    if error = response['error']
+      raise get_error(error)
     end
 
-    def parse_error(error)
-      # Find error or return
-      klass = Hue::ERROR_MAP[error['type']]
-      klass = UnknownError unless klass
+    response['success']
+  end
 
-      # Raise error
-      raise klass.new(error['description'])
-    rescue  Hue::UnauthorizedUser
-      register_user
+  def register_user
+    body = JSON.dump({
+      devicetype: 'Ruby',
+      username: @username
+    })
+
+    uri = URI.parse("http://#{bridge.ip}/api")
+    http = Net::HTTP.new(uri.host)
+    response = JSON(http.request_post(uri.path, body).body).first
+
+    if error = response['error']
+      raise get_error(error)
     end
+
+    response['success']
+  end
+
+  def get_error(error)
+    # Find error class and return instance
+    klass = Hue::ERROR_MAP[error['type']] || UnknownError unless klass
+    klass.new(error['description'])
+  end
+
   end
 end
