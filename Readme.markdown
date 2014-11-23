@@ -45,7 +45,7 @@ From Ruby:
 > light.on = true
 > light.hue = 46920
 > light.color_temperature = 100
-> light.set_state({:color_temperature => 400, :transition => 100})
+> light.set_state({:color_temperature => 400}, transition=10*5) # Transit to 400K in 5 seconds.
 ```
 
 ## Contributing
