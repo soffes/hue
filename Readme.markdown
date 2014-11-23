@@ -33,6 +33,7 @@ From CLI:
 ``` shell
 $ hue all on
 $ hue all off
+$ hue all --hue 65280 --brightness 20
 $ hue light 2 on
 $ hue light 2 --brightness 20
 ```

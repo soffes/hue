@@ -17,11 +17,26 @@ module Hue
       end
     end
 
+    desc 'light ID STATE [COLOR]', 'Access a light'
+    long_desc <<-LONGDESC
+    Examples: \n
+      hue all on \n
+      hue all off \n
+      hue all --hue 12345  \n
+      hue all --bri 25 \n
+      hue all --hue 50000 --bri 200 --sat 240 \n
+      hue all --alert lselect \n
+    LONGDESC
+    option :hue, :type => :numeric
+    option :sat, :type => :numeric, :aliases => '--saturation'
+    option :bri, :type => :numeric, :aliases => '--brightness'
+    option :alert, :type => :string
     desc 'all STATE', 'Send commands to all lights'
-    def all(state)
-      on = state == 'on'
+    def all(state = 'on')
+      body = options.dup
+      body[:on] = state == 'on'
       client.lights.each do |light|
-        light.on = on
+        puts light.set_state body
       end
     end
 
