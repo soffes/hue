@@ -45,7 +45,8 @@ From Ruby:
 > light.on = true
 > light.hue = 46920
 > light.color_temperature = 100
-> light.set_state({:color_temperature => 400, :transition => 100})
+> transition_time = 10*5 # Hue transition times are in 1/10 of a second.
+> light.set_state({:color_temperature => 400}, transition_time).
 ```
 
 ## Contributing
