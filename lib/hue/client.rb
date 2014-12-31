@@ -33,15 +33,25 @@ module Hue
     def bridges
       @bridges ||= begin
         devices = Playful::SSDP.search 'IpBridge'
-        devices
-          .uniq { |d| d[:location] }
-          .map do |bridge|
-            Bridge.new(self, {
-              'id' => bridge[:usn],
-              'name' => bridge[:st],
-              'internalipaddress' => URI.parse(bridge[:location]).host
-            })
+
+        if devices.count == 0
+          # UPnP failed, lets use N-UPnP
+          bs = []
+          JSON(Net::HTTP.get(URI.parse('https://www.meethue.com/api/nupnp'))).each do |hash|
+            bs << Bridge.new(self, hash)
           end
+          bs
+        else
+          devices
+            .uniq { |d| d[:location] }
+            .map do |bridge|
+              Bridge.new(self, {
+                'id' => bridge[:usn],
+                'name' => bridge[:st],
+                'internalipaddress' => URI.parse(bridge[:location]).host
+              })
+            end
+        end
       end
     end
 
