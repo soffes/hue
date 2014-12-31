@@ -28,7 +28,7 @@ $ gem install hue
 
 The first time you use it, it will automatically create a user for you. Doing this requires you to have pushed the button on your bridge in the last 30 seconds. If you haven't it will throw an exception and let you know you need to push the button. Simply press the button and run the command again.
 
-From CLI:
+### CLI
 
 ``` shell
 $ hue all on
@@ -38,23 +38,45 @@ $ hue light 2 on
 $ hue light 2 --brightness 20
 ```
 
-From Ruby:
+### Ruby
 
 ``` ruby
 client = Hue::Client.new
+```
+
+#### Lights
+
+``` ruby
 light = client.lights.first
-light.on = true
+light.on!
 light.hue = 46920
 light.color_temperature = 100
 transition_time = 10*5 # Hue transition times are in 1/10 of a second.
 light.set_state({:color_temperature => 400}, transition_time)
+```
 
-# Creating a group
+#### Groups
+
+``` ruby
+# Fetching
+group = client.groups.first
+group = client.group(1)
+
+# Accessing group lights
+group.lights.first.on!
+group.lights.each { |light| light.hue = rand(0...65535) }
+
+# Creating groups
 group = client.group # Don't specify an ID
 group.name = "My Group"
 group.lights = [3, 4] # Can specify lights by ID
 group.lights = client.lights.first(2) # Or by Light objects
+group.new? # => true
 group.create! # Once the group is created, you can continue to customize it
+group.new? # => false
+
+# Destroying groups
+client.groups.last.destroy!
 ```
 
 ## Contributing
