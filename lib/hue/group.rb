@@ -69,6 +69,17 @@ module Hue
       @name = resp[0]['success']["/groups/#{id}/name"]
     end
 
+    def on?
+      @state['on']
+    end
+
+    %w{on hue saturation brightness color_temperature alert effect}.each do |key|
+      define_method "#{key}=" do |value|
+        set_state({key => value})
+        instance_variable_set("@#{key}", value)
+      end
+    end
+
     def lights=(light_ids)
       light_ids.map! do |light_id|
         light_id.is_a?(Light) ? light_id.id : light_id.to_s
@@ -90,6 +101,15 @@ module Hue
       body = translate_keys(attributes, GROUP_KEYS_MAP)
 
       uri = URI.parse(base_url)
+      http = Net::HTTP.new(uri.host)
+      response = http.request_put(uri.path, JSON.dump(body))
+      JSON(response.body)
+    end
+
+    def set_state(attributes)
+      body = translate_keys(attributes, STATE_KEYS_MAP)
+
+      uri = URI.parse("#{base_url}/action")
       http = Net::HTTP.new(uri.host)
       response = http.request_put(uri.path, JSON.dump(body))
       JSON(response.body)
