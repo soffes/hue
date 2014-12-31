@@ -57,13 +57,17 @@ module Hue
       return Group.new(self, bridge) if id.nil?
 
       id = id.to_s
-      groups.select { |l| l.id == id }.first
+      groups.select { |g| g.id == id }.first
     end
 
     def scenes
       bridge.scenes
     end
 
+    def scene(id)
+      id = id.to_s
+      scenes.select { |s| s.id == id }.first
+    end
 
   private
 
