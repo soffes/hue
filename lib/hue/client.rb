@@ -52,6 +52,10 @@ module Hue
       bridge.groups
     end
 
+    def group(id)
+      groups.select { |l| l.id == id }.first
+    end
+
 
   private
 
