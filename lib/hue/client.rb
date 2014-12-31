@@ -1,5 +1,9 @@
 require 'net/http'
 require 'json'
+require 'playful/ssdp'
+
+# Playful is super verbose
+Playful.log = false
 
 module Hue
   class Client
@@ -28,11 +32,16 @@ module Hue
 
     def bridges
       @bridges ||= begin
-        bs = []
-        JSON(Net::HTTP.get(URI.parse('https://www.meethue.com/api/nupnp'))).each do |hash|
-          bs << Bridge.new(self, hash)
-        end
-        bs
+        devices = Playful::SSDP.search 'IpBridge'
+        devices
+          .uniq { |d| d[:location] }
+          .map do |bridge|
+            Bridge.new(self, {
+              'id' => bridge[:usn],
+              'name' => bridge[:st],
+              'internalipaddress' => URI.parse(bridge[:location]).host
+            })
+          end
       end
     end
 
