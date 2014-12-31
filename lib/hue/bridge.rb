@@ -93,6 +93,15 @@ module Hue
       end
     end
 
+    def scenes
+      @scenes ||= begin
+        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/scenes")))
+        json.map do |id, data|
+          Scene.new(@client, self, id, data)
+        end
+      end
+    end
+
   private
 
     KEYS_MAP = {

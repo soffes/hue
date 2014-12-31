@@ -58,6 +58,10 @@ module Hue
       groups.select { |l| l.id == id }.first
     end
 
+    def scenes
+      bridge.scenes
+    end
+
 
   private
 
