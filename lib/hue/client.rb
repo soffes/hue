@@ -48,6 +48,10 @@ module Hue
       self.lights.select { |l| l.id == id }.first
     end
 
+    def groups
+      bridge.groups
+    end
+
 
   private
 

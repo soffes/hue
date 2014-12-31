@@ -1,5 +1,7 @@
 module Hue
   class Light
+    include TranslateKeys
+
     HUE_RANGE = 0..65535
     SATURATION_RANGE = 0..255
     BRIGHTNESS_RANGE = 0..255
@@ -136,7 +138,7 @@ module Hue
     #   defaults to 4 (400ms). For example, setting transistiontime:10 will
     #   make the transition last 1 second.
     def set_state(attributes, transition = nil)
-      body = translate_keys(attributes)
+      body = translate_keys(attributes, STATE_KEYS_MAP)
 
       # Add transition
       body.merge!({:transitiontime => transition}) if transition
@@ -177,28 +179,10 @@ module Hue
       :reachable => :reachable,
     }
 
-    def translate_keys(hash)
-      new_hash = {}
-      hash.each do |key, value|
-        new_key = STATE_KEYS_MAP[key.to_sym]
-        key = new_key if new_key
-        new_hash[key] = value
-      end
-      new_hash
-    end
-
     def unpack(hash)
       unpack_hash(hash, KEYS_MAP)
       unpack_hash(@state, STATE_KEYS_MAP)
       @x, @y = @state['xy']
-    end
-
-    def unpack_hash(hash, map)
-      map.each do |local_key, remote_key|
-        value = hash[remote_key.to_s]
-        next unless value
-        instance_variable_set("@#{local_key}", value)
-      end
     end
 
     def base_url
