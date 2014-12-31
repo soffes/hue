@@ -2,6 +2,7 @@ module Hue
   class Group
     include Enumerable
     include TranslateKeys
+    include EditableState
 
     # Unique identification number.
     attr_reader :id
@@ -67,17 +68,6 @@ module Hue
     def name=(name)
       resp = set_group_state({:name => name})
       @name = resp[0]['success']["/groups/#{id}/name"]
-    end
-
-    def on?
-      @state['on']
-    end
-
-    %w{on hue saturation brightness color_temperature alert effect}.each do |key|
-      define_method "#{key}=" do |value|
-        set_state({key => value})
-        instance_variable_set("@#{key}", value)
-      end
     end
 
     def lights=(light_ids)

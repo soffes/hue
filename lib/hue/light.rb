@@ -1,6 +1,7 @@
 module Hue
   class Light
     include TranslateKeys
+    include EditableState
 
     HUE_RANGE = 0..65535
     SATURATION_RANGE = 0..255
@@ -108,22 +109,6 @@ module Hue
       # else
         # TODO: Error
       end
-    end
-
-    def on?
-      @state['on']
-    end
-
-    %w{on hue saturation brightness color_temperature alert}.each do |key|
-      define_method "#{key}=".to_sym do |value|
-        set_state({key.to_sym => value})
-        instance_variable_set("@#{key}".to_sym, value)
-      end
-    end
-
-    def set_xy(x, y)
-      set_state({:xy => [x, y]})
-      @x, @y = x, y
     end
 
     # Indicates if a light can be reached by the bridge. Currently

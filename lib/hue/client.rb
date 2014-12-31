@@ -45,7 +45,8 @@ module Hue
     end
 
     def light(id)
-      self.lights.select { |l| l.id == id }.first
+      id = id.to_s
+      lights.select { |l| l.id == id }.first
     end
 
     def groups
@@ -53,6 +54,7 @@ module Hue
     end
 
     def group(id)
+      id = id.to_s
       groups.select { |l| l.id == id }.first
     end
 
