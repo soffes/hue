@@ -133,7 +133,11 @@ module Hue
     end
 
     def destroy!
-
+      uri = URI.parse(base_url)
+      http = Net::HTTP.new(uri.host)
+      response = http.delete(uri.path)
+      json = JSON(response.body)
+      @id = nil if json[0]['success']
     end
 
     def new?
