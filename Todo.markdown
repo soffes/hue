@@ -6,3 +6,4 @@
 * Effects
 * User management
 * Configuration
+* Local UPNP
