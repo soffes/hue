@@ -53,7 +53,9 @@ module Hue
       bridge.groups
     end
 
-    def group(id)
+    def group(id = nil)
+      return Group.new(self, bridge) if id.nil?
+
       id = id.to_s
       groups.select { |l| l.id == id }.first
     end

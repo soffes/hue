@@ -41,13 +41,20 @@ $ hue light 2 --brightness 20
 From Ruby:
 
 ``` ruby
-> client = Hue::Client.new
-> light = client.lights.first
-> light.on = true
-> light.hue = 46920
-> light.color_temperature = 100
-> transition_time = 10*5 # Hue transition times are in 1/10 of a second.
-> light.set_state({:color_temperature => 400}, transition_time).
+client = Hue::Client.new
+light = client.lights.first
+light.on = true
+light.hue = 46920
+light.color_temperature = 100
+transition_time = 10*5 # Hue transition times are in 1/10 of a second.
+light.set_state({:color_temperature => 400}, transition_time)
+
+# Creating a group
+group = client.group # Don't specify an ID
+group.name = "My Group"
+group.lights = [3, 4] # Can specify lights by ID
+group.lights = client.lights.first(2) # Or by Light objects
+group.create! # Once the group is created, you can continue to customize it
 ```
 
 ## Contributing

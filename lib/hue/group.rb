@@ -45,7 +45,7 @@ module Hue
     # A fixed name describing the type of group.
     attr_reader :type
 
-    def initialize(client, bridge, id, data)
+    def initialize(client, bridge, id = nil, data = {})
       @client = client
       @bridge = bridge
       @id = id
@@ -67,7 +67,7 @@ module Hue
 
     def name=(name)
       resp = set_group_state({:name => name})
-      @name = resp[0]['success']["/groups/#{id}/name"]
+      @name = new? ? name : resp[0]['success']["/groups/#{id}/name"]
     end
 
     def lights=(light_ids)
@@ -93,6 +93,7 @@ module Hue
     alias_method :add_light, :<<
 
     def set_group_state(attributes)
+      return if new?
       body = translate_keys(attributes, GROUP_KEYS_MAP)
 
       uri = URI.parse(base_url)
@@ -102,6 +103,7 @@ module Hue
     end
 
     def set_state(attributes)
+      return if new?
       body = translate_keys(attributes, STATE_KEYS_MAP)
 
       uri = URI.parse("#{base_url}/action")
@@ -114,6 +116,28 @@ module Hue
       json = JSON(Net::HTTP.get(URI.parse(base_url)))
       unpack(json)
       @lights = nil
+    end
+
+    def create!
+      body = {
+        :name => @name,
+        :lights => @light_ids,
+      }
+
+      uri = URI.parse("http://#{@bridge.ip}/api/#{@client.username}/groups")
+      http = Net::HTTP.new(uri.host)
+      response = http.request_post(uri.path, JSON.dump(body))
+      json = JSON(response.body)
+
+      @id = json[0]['success']['id']
+    end
+
+    def destroy!
+
+    end
+
+    def new?
+      @id.nil?
     end
 
     private
@@ -139,8 +163,11 @@ module Hue
 
     def unpack(data)
       unpack_hash(data, GROUP_KEYS_MAP)
-      unpack_hash(@state, STATE_KEYS_MAP)
-      @x, @y = @state['xy']
+
+      unless new?
+        unpack_hash(@state, STATE_KEYS_MAP)
+        @x, @y = @state['xy']
+      end
     end
 
     def base_url
