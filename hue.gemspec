@@ -18,7 +18,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = '>= 1.8.7'
+  spec.required_ruby_version = '>= 1.9.3'
   spec.add_dependency 'thor'
   spec.add_dependency 'json'
+  spec.add_dependency 'log_switch', '0.4.0'
+  spec.add_dependency 'playful'
 end
