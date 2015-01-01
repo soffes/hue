@@ -70,7 +70,7 @@ module Hue
 
     def lights
       @lights ||= begin
-        json = JSON(Net::HTTP.get(URI.parse("http://#{ip}/api/#{@client.username}")))
+        json = JSON(Net::HTTP.get(URI.parse(base_url)))
         json['lights'].map do |key, value|
           Light.new(@client, self, key, value)
         end
@@ -78,10 +78,28 @@ module Hue
     end
 
     def add_lights
-      uri = URI.parse("http://#{ip}/api/#{@client.username}/lights")
+      uri = URI.parse("#{base_url}/lights")
       http = Net::HTTP.new(uri.host)
       response = http.request_post(uri.path, nil)
       (response.body).first
+    end
+
+    def groups
+      @groups ||= begin
+        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/groups")))
+        json.map do |id, data|
+          Group.new(@client, self, id, data)
+        end
+      end
+    end
+
+    def scenes
+      @scenes ||= begin
+        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/scenes")))
+        json.map do |id, data|
+          Scene.new(@client, self, id, data)
+        end
+      end
     end
 
   private

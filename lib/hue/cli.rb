@@ -61,6 +61,37 @@ module Hue
       puts light.set_state(body) if body.length > 0
     end
 
+    desc 'groups', 'Find all light groups on your network'
+    def groups
+      client.groups.each do |group|
+        puts group.id.to_s.ljust(6) + group.name
+        group.lights.each do |light|
+          puts " -> " + light.id.to_s.ljust(6) + light.name
+        end
+      end
+    end
+
+    desc 'group ID STATE [COLOR]', 'Update a group of lights'
+    long_desc <<-LONGDESC
+    Examples: \n
+      hue groups 1 on --hue 12345
+      hue groups 1 --bri 25
+      hue groups 1 --alert lselect
+      hue groups 1 off
+    LONGDESC
+    option :hue, :type => :numeric
+    option :sat, :type => :numeric, :aliases => '--saturation'
+    option :brightness, :type => :numeric, :aliases => '--brightness'
+    option :alert, :type => :string
+    def group(id, state = nil)
+      group = client.group(id)
+      puts group.name
+
+      body = options.dup
+      body[:on] = (state == 'on' || !(state == 'off'))
+      puts group.set_state(body) if body.length > 0
+    end
+
   private
 
     def client

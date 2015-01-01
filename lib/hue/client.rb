@@ -64,9 +64,29 @@ module Hue
     end
 
     def light(id)
-      self.lights.select { |l| l.id == id }.first
+      id = id.to_s
+      lights.select { |l| l.id == id }.first
     end
 
+    def groups
+      bridge.groups
+    end
+
+    def group(id = nil)
+      return Group.new(self, bridge) if id.nil?
+
+      id = id.to_s
+      groups.select { |g| g.id == id }.first
+    end
+
+    def scenes
+      bridge.scenes
+    end
+
+    def scene(id)
+      id = id.to_s
+      scenes.select { |s| s.id == id }.first
+    end
 
   private
 
