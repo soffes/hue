@@ -1,6 +1,7 @@
 require 'net/http'
 require 'json'
 require 'playful/ssdp'
+require 'curb'
 
 # Playful is super verbose
 Playful.log = false
@@ -37,7 +38,12 @@ module Hue
         if devices.count == 0
           # UPnP failed, lets use N-UPnP
           bs = []
-          JSON(Net::HTTP.get(URI.parse('https://www.meethue.com/api/nupnp'))).each do |hash|
+          easy = Curl::Easy.new
+          easy.follow_location = true
+          easy.max_redirects = 10
+          easy.url = 'https://www.meethue.com/api/nupnp'
+          easy.perform
+          JSON(easy.body).each do |hash|
             bs << Bridge.new(self, hash)
           end
           bs
