@@ -1,10 +1,6 @@
 require 'net/http'
 require 'json'
-require 'playful/ssdp'
 require 'curb'
-
-# Playful is super verbose
-Playful.log = false
 
 module Hue
   class Client
@@ -33,31 +29,16 @@ module Hue
 
     def bridges
       @bridges ||= begin
-        devices = Playful::SSDP.search 'IpBridge'
-
-        if devices.count == 0
-          # UPnP failed, lets use N-UPnP
-          bs = []
-          easy = Curl::Easy.new
-          easy.follow_location = true
-          easy.max_redirects = 10
-          easy.url = 'https://www.meethue.com/api/nupnp'
-          easy.perform
-          JSON(easy.body).each do |hash|
-            bs << Bridge.new(self, hash)
-          end
-          bs
-        else
-          devices
-            .uniq { |d| d[:location] }
-            .map do |bridge|
-              Bridge.new(self, {
-                'id' => bridge[:usn],
-                'name' => bridge[:st],
-                'internalipaddress' => URI.parse(bridge[:location]).host
-              })
-            end
+        bs = []
+        easy = Curl::Easy.new
+        easy.follow_location = true
+        easy.max_redirects = 10
+        easy.url = 'https://www.meethue.com/api/nupnp'
+        easy.perform
+        JSON(easy.body).each do |hash|
+          bs << Bridge.new(self, hash)
         end
+        bs
       end
     end
 
