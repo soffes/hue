@@ -19,16 +19,16 @@ module Hue
 
     # Hue of the light. This is a wrapping value between 0 and 65535.
     # Both 0 and 65535 are red, 25500 is green and 46920 is blue.
-    attr_accessor :hue
+    attr_reader :hue
 
     # Saturation of the light. 255 is the most saturated (colored)
     # and 0 is the least saturated (white).
-    attr_accessor :saturation
+    attr_reader :saturation
 
     # Brightness of the light. This is a scale from the minimum
     # brightness the light is capable of, 0, to the maximum capable
     # brightness, 255. Note a brightness of 0 is not off.
-    attr_accessor :brightness
+    attr_reader :brightness
 
     # The x coordinate of a color in CIE color space. Between 0 and 1.
     #
@@ -44,7 +44,7 @@ module Hue
     # are capable of 153 (6500K) to 500 (2000K).
     #
     # @see http://en.wikipedia.org/wiki/Mired
-    attr_accessor :color_temperature
+    attr_reader :color_temperature
 
     # The alert effect, which is a temporary change to the bulb’s state.
     # This can take one of the following values:
@@ -58,12 +58,12 @@ module Hue
     # current state in an upcoming patch.
     #
     # @see http://developers.meethue.com/coreconcepts.html#some_extra_fun_stuff
-    attr_accessor :alert
+    attr_reader :alert
 
     # The dynamic effect of the light, can either be `none` or
     # `colorloop`. If set to colorloop, the light will cycle through
     # all hues using the current brightness and saturation settings.
-    attr_accessor :effect
+    attr_reader :effect
 
     # Indicates the color mode in which the light is working, this is
     # the last command type it received. Values are `hs` for Hue and
