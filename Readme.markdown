@@ -64,7 +64,7 @@ group = client.group(1)
 
 # Accessing group lights
 group.lights.first.on!
-group.lights.each { |light| light.hue = rand(0...65535) }
+group.lights.each { |light| light.hue = rand(Hue::Light::HUE_RANGE) }
 
 # Creating groups
 group = client.group # Don't specify an ID
