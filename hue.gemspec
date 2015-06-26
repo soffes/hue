@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json'
   spec.add_dependency 'log_switch', '0.4.0'
   spec.add_dependency 'curb'
+  spec.add_dependency 'terminal-table'
   spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency 'webmock'
 end
