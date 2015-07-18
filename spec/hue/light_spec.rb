@@ -21,4 +21,28 @@ RSpec.describe Hue::Light do
       end
     end
   end
+
+  describe "#toggle" do
+    it "switches a powered light off" do
+      client = Hue::Client.new
+      light = Hue::Light.new(client, client.bridge, 0, {"state" => {}})
+
+      light.on!
+
+      expect(light).to receive(:off!)
+
+      light.toggle!
+    end
+
+    it "switches an unpowered light on" do
+      client = Hue::Client.new
+      light = Hue::Light.new(client, client.bridge, 0, {"state" => {}})
+
+      light.off!
+
+      expect(light).to receive(:on!)
+
+      light.toggle!
+    end
+  end
 end

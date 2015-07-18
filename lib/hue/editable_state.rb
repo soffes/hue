@@ -12,6 +12,15 @@ module Hue
       self.on = false
     end
 
+    # Turn the light on if it's off and vice versa
+    def toggle!
+      if @on
+        self.off!
+      else
+        self.on!
+      end
+    end
+
     %w{on hue saturation brightness color_temperature alert effect}.each do |key|
       define_method "#{key}=".to_sym do |value|
         set_state({key.to_sym => value})
