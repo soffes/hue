@@ -6,16 +6,18 @@ module Hue
   class Client
     attr_reader :username
 
-    def initialize(username = '1234567890')
-      unless USERNAME_RANGE.include?(username.length)
-        raise InvalidUsername, "Usernames must be between #{USERNAME_RANGE.first} and #{USERNAME_RANGE.last}."
-      end
+    def initialize(username = nil)
+      username = find_username unless @username
 
       @username = username
 
-      begin
-        validate_user
-      rescue Hue::UnauthorizedUser
+      if @username
+        begin
+          validate_user
+        rescue Hue::UnauthorizedUser
+          register_user
+        end
+      else
         register_user
       end
     end
@@ -75,44 +77,53 @@ module Hue
       scenes.select { |s| s.id == id }.first
     end
 
-  private
+    private
 
-  def validate_user
-    response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+    def find_username
+      return ENV['HUE_USERNAME'] if ENV['HUE_USERNAME']
 
-    if response.is_a? Array
-      response = response.first
+      json = JSON(File.read(File.expand_path('~/.hue')))
+      json['username']
+    rescue
+      return nil
     end
 
-    if error = response['error']
-      raise get_error(error)
+    def validate_user
+      response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+
+      if response.is_a? Array
+        response = response.first
+      end
+
+      if error = response['error']
+        raise get_error(error)
+      end
+
+      response['success']
     end
 
-    response['success']
-  end
+    def register_user
+      body = JSON.dump({
+        devicetype: 'Ruby'
+      })
 
-  def register_user
-    body = JSON.dump({
-      devicetype: 'Ruby',
-      username: @username
-    })
+      uri = URI.parse("http://#{bridge.ip}/api")
+      http = Net::HTTP.new(uri.host)
+      response = JSON(http.request_post(uri.path, body).body).first
 
-    uri = URI.parse("http://#{bridge.ip}/api")
-    http = Net::HTTP.new(uri.host)
-    response = JSON(http.request_post(uri.path, body).body).first
+      if error = response['error']
+        raise get_error(error)
+      end
 
-    if error = response['error']
-      raise get_error(error)
+      if @username = response['success']['username']
+        File.write(File.expand_path('~/.hue'), JSON.dump({username: @username}))
+      end
     end
 
-    response['success']
-  end
-
-  def get_error(error)
-    # Find error class and return instance
-    klass = Hue::ERROR_MAP[error['type']] || UnknownError unless klass
-    klass.new(error['description'])
-  end
-
+    def get_error(error)
+      # Find error class and return instance
+      klass = Hue::ERROR_MAP[error['type']] || UnknownError unless klass
+      klass.new(error['description'])
+    end
   end
 end
