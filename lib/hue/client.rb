@@ -23,8 +23,12 @@ module Hue
     end
 
     def bridge
-      # Pick the first one for now. In theory, they should all do the same thing.
-      bridge = bridges.first
+      @bridge_id = find_bridge_id unless @bridge_id
+      if @bridge_id
+        bridge = bridges.select { |b| b.id == @bridge_id }.first
+      else
+        bridge = bridges.first
+      end
       raise NoBridgeFound unless bridge
       bridge
     end
@@ -118,6 +122,15 @@ module Hue
       if @username = response['success']['username']
         File.write(File.expand_path('~/.hue'), JSON.dump({username: @username}))
       end
+    end
+
+    def find_bridge_id
+      return ENV['HUE_BRIDGE_ID'] if ENV['HUE_BRIDGE_ID']
+
+      json = JSON(File.read(File.expand_path('~/.hue')))
+      json['bridge_id']
+    rescue
+      return nil
     end
 
     def get_error(error)
