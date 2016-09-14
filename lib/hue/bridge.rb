@@ -66,6 +66,9 @@ module Hue
     def refresh
       json = get_configuration
       unpack(json)
+      @lights = nil
+      @groups = nil
+      @scenes = nil
     end
 
     def lights
