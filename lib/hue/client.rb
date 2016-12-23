@@ -7,9 +7,7 @@ module Hue
     attr_reader :username
 
     def initialize(username = nil)
-      username = find_username unless username
-
-      @username = username
+      @username = username || find_username
 
       if @username
         begin
