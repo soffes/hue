@@ -1,12 +1,16 @@
 require 'thor'
+require 'terminal-table'
 
 module Hue
   class Cli < Thor
     desc 'lights', 'Find all of the lights on your network'
     def lights
-      client.lights.each do |light|
-        puts light.id.to_s.ljust(6) + light.name
+      headings = ["ID", "Name", "Status", "Hue", "Saturation", "Brightness"]
+      rows = client.lights.each_with_object([]) do |light, r|
+        status = light.off? ? "OFF" : "ON"
+        r << [light.id, light.name, status, light.hue, light.saturation, light.brightness]
       end
+      puts Terminal::Table.new(rows: rows, headings: headings)
     end
 
     desc 'add LIGHTS', 'Search for new lights'
