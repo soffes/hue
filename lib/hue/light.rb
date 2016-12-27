@@ -140,6 +140,10 @@ module Hue
       unpack(json)
     end
 
+    def off?
+      !@state["on"]
+    end
+
   private
 
     KEYS_MAP = {
