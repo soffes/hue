@@ -5,4 +5,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'hue'
 require 'hue/cli'
 
-Hue::Cli.start
+begin
+  Hue::Cli.start
+rescue Hue::LinkButtonNotPressed
+  abort("Error: Press the link button on your bridge and then run this command again within 30 seconds of pressing it.")
+end
