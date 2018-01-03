@@ -1,7 +1,7 @@
 module Hue
   module EditableState
     def on?
-      @state['on']
+      @on || false
     end
 
     def on!
