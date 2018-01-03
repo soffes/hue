@@ -105,6 +105,15 @@ module Hue
       end
     end
 
+    def sensors
+      @sensors ||= begin
+        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/sensors")))
+        json.map do |id, data|
+          Sensor.new(@client, self, id, data)
+        end
+      end
+    end
+
   private
 
     KEYS_MAP = {

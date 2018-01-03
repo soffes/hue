@@ -7,6 +7,7 @@ require 'hue/translate_keys'
 require 'hue/light'
 require 'hue/group'
 require 'hue/scene'
+require 'hue/sensor'
 
 module Hue
   USERNAME_RANGE = 10..40

@@ -79,6 +79,15 @@ module Hue
       scenes.select { |s| s.id == id }.first
     end
 
+    def sensors
+      bridge.sensors
+    end
+
+    def sensor(id)
+      id = id.to_s
+      sensors.select { |s| s.id == id }.first
+    end
+
     private
 
     def find_username
