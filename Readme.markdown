@@ -2,7 +2,6 @@
 
 Work with Philips Hue light bulbs from Ruby.
 
-[![Code Climate](https://codeclimate.com/github/soffes/hue.png)](https://codeclimate.com/github/soffes/hue) [![Dependency Status](https://gemnasium.com/soffes/hue.png)](https://gemnasium.com/soffes/hue) [![Gem Version](https://badge.fury.io/rb/hue.png)](http://badge.fury.io/rb/hue)
 
 ## Installation
 
