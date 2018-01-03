@@ -7,6 +7,7 @@ module Hue
     attr_reader :username
 
     def initialize(username = nil)
+      @bridge_id = nil
       @username = username || find_username
 
       if @username
