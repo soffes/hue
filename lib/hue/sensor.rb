@@ -14,11 +14,15 @@ module Hue
     # A fixed name describing the type of sensor.
     attr_reader :type
 
+    attr_reader :state
+
     # The hardware model of the sensor.
     attr_reader :model
 
     # The unique identifier of the sensor.
     attr_reader :uuid
+
+    attr_reader :manufacturer
 
     # An identifier for the software version running on the sensor.
     attr_reader :software_version
@@ -92,7 +96,7 @@ module Hue
     end
 
     def base_url
-      "http://#{@bridge.ip}/api/#{@client.username}/sensors/#{id}"
+      "http://#{@bridge.ip}/api/#{@client.username}/sensors"
     end
   end
 end
