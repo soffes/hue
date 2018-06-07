@@ -83,6 +83,9 @@ module Hue
 
     # Reserved for future functionality.
     attr_reader :point_symbol
+    
+    # The unique ID of the light.
+    attr_reader :uid
 
     def initialize(client, bridge, id, hash)
       @client = client
@@ -148,7 +151,8 @@ module Hue
       :name => :name,
       :model => :modelid,
       :software_version => :swversion,
-      :point_symbol => :pointsymbol
+      :point_symbol => :pointsymbol,
+      :uid => :uniqueid
     }
 
     STATE_KEYS_MAP = {
