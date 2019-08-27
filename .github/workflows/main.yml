@@ -1,0 +1,13 @@
+name: Tests
+on: [push]
+jobs:
+  test:
+    name: Test Swift Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v1
+      - name: 'Install Dependencies'
+        run: bundle install
+      - name: 'Test'
+        run: bundle exec rake test
