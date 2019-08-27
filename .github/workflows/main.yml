@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: 'Install Dependencies'
-        run: bundle install
+        run: gem install bundler && bundle install
       - name: 'Test'
         run: bundle exec rake test
