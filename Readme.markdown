@@ -1,7 +1,7 @@
 # Hue
 
 [![Gem Version](https://img.shields.io/gem/v/hue.svg)](http://rubygems.org/gems/hue)
-[![Build Status](https://img.shields.io/travis/soffes/hue/master.svg)](https://travis-ci.org/soffes/hue)
+[![Build Status](https://github.com/soffes/hue/workflows/Tests/badge.svg)](https://github.com/soffes/hue/actions)
 
 Work with Philips Hue light bulbs from Ruby.
 
