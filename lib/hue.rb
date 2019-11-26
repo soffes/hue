@@ -1,3 +1,4 @@
+require 'color'
 require 'hue/version'
 require 'hue/errors'
 require 'hue/client'
