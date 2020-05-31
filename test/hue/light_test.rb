@@ -4,7 +4,7 @@ class LightTest < Minitest::Test
   def before_setup
     super
 
-    stub_request(:get, "https://www.meethue.com/api/nupnp").
+    stub_request(:get, "https://discovery.meethue.com/").
       to_return(:body => '[{"internalipaddress":"localhost"}]')
 
     stub_request(:get, %r{http://localhost/api/*}).to_return(:body => '[{"success":true}]')
