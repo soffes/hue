@@ -4,7 +4,7 @@ class ClientTest < Minitest::Test
   def before_setup
     super
 
-    stub_request(:get, "https://www.meethue.com/api/nupnp").
+    stub_request(:get, "https://discovery.meethue.com/").
       to_return(:body => '[{"id":"ffa57b3b257200065704","internalipaddress":"192.168.0.1"},{"id":"63c2fc01391276a319f9","internalipaddress":"192.168.0.2"}]')
 
     stub_request(:get, %r{http://192.168.0.1/api/*}).to_return(:body => '[{"success":true}]')

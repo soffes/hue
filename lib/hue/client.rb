@@ -38,7 +38,7 @@ module Hue
         easy = Curl::Easy.new
         easy.follow_location = true
         easy.max_redirects = 10
-        easy.url = 'https://www.meethue.com/api/nupnp'
+        easy.url = 'https://discovery.meethue.com/'
         easy.perform
         JSON(easy.body).each do |hash|
           bs << Bridge.new(self, hash)
