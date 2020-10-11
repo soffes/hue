@@ -50,7 +50,7 @@ module Hue
     LONGDESC
     option :hue, :type => :numeric
     option :sat, :type => :numeric, :aliases => '--saturation'
-    option :brightness, :type => :numeric, :aliases => '--brightness'
+    option :bri, :type => :numeric, :aliases => '--brightness'
     option :alert, :type => :string
     def light(id, state = nil)
       light = client.light(id)
@@ -81,7 +81,7 @@ module Hue
     LONGDESC
     option :hue, :type => :numeric
     option :sat, :type => :numeric, :aliases => '--saturation'
-    option :brightness, :type => :numeric, :aliases => '--brightness'
+    option :bri, :type => :numeric, :aliases => '--brightness'
     option :alert, :type => :string
     def group(id, state = nil)
       group = client.group(id)
