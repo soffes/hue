@@ -14,7 +14,7 @@ class LightTest < Minitest::Test
 
   %w{on hue saturation brightness color_temperature alert effect}.each do |attribute|
     define_method "test_setting_#{attribute}" do
-      client = Hue::Client.new
+      client = Hue::Client.new(use_mdns: false)
       light = Hue::Light.new(client, client.bridge, 0, {"state" => {}})
 
       light.send("#{attribute}=", 24)
