@@ -1,7 +1,7 @@
 module Hue
   module EditableState
     def on?
-      @state['on']
+      @on || false
     end
 
     def on!
@@ -10,6 +10,15 @@ module Hue
 
     def off!
       self.on = false
+    end
+
+    # Turn the light on if it's off and vice versa
+    def toggle!
+      if @on
+        self.off!
+      else
+        self.on!
+      end
     end
 
     %w{on hue saturation brightness color_temperature alert effect}.each do |key|

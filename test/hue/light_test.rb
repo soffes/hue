@@ -21,4 +21,24 @@ class LightTest < Minitest::Test
       assert_requested :put, %r{http://localhost/api/.*/lights/0}
     end
   end
+
+  def test_toggle_while_off
+    client = Hue::Client.new(use_mdns: false)
+    light = Hue::Light.new(client, client.bridge, 0, {"state" => {}})
+    assert_equal false, light.on?
+
+    light.toggle!
+    assert_requested :put, %r{http://localhost/api/.*/lights/0}
+    assert_equal true, light.on?
+  end
+
+  def test_toggle_while_on
+    client = Hue::Client.new(use_mdns: false)
+    light = Hue::Light.new(client, client.bridge, 0, {"state" => {'on' => true}})
+    assert_equal true, light.on?
+
+    light.toggle!
+    assert_requested :put, %r{http://localhost/api/.*/lights/0}
+    assert_equal false, light.on?
+  end
 end
