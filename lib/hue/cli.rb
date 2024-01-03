@@ -23,8 +23,8 @@ module Hue
       hue all on \n
       hue all off \n
       hue all --hue 12345  \n
-      hue all --bri 25 \n
-      hue all --hue 50000 --bri 200 --sat 240 \n
+      hue all --brightness 25 \n
+      hue all --hue 50000 --brightness 200 --saturation 240 \n
       hue all --alert lselect \n
     LONGDESC
     option :hue, :type => :numeric
@@ -44,7 +44,7 @@ module Hue
     long_desc <<-LONGDESC
     Examples: \n
       hue light 1 on --hue 12345  \n
-      hue light 1 --bri 25 \n
+      hue light 1 --brightness 25 \n
       hue light 1 --alert lselect \n
       hue light 1 off
     LONGDESC
@@ -75,7 +75,7 @@ module Hue
     long_desc <<-LONGDESC
     Examples: \n
       hue groups 1 on --hue 12345
-      hue groups 1 --bri 25
+      hue groups 1 --brightness 25
       hue groups 1 --alert lselect
       hue groups 1 off
     LONGDESC
