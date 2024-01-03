@@ -12,14 +12,14 @@ class ClientTest < Minitest::Test
   end
 
   def test_with_bridge_id
-    client = Hue::Client.new
+    client = Hue::Client.new(use_mdns: false)
     client.stub :find_bridge_id, '63c2fc01391276a319f9' do
       assert_equal '63c2fc01391276a319f9', client.bridge.id
     end
   end
 
   def test_without_bridge_id
-    client = Hue::Client.new
+    client = Hue::Client.new(use_mdns: false)
     assert_equal 'ffa57b3b257200065704', client.bridge.id
   end
 end

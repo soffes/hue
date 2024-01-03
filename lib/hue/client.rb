@@ -1,14 +1,16 @@
 require 'net/http'
 require 'json'
+require 'resolv'
 require 'curb'
 
 module Hue
   class Client
     attr_reader :username
 
-    def initialize(username = nil)
+    def initialize(username = nil, use_mdns: true)
       @bridge_id = nil
       @username = username || find_username
+      @use_mdns = use_mdns
 
       if @username
         begin
@@ -35,14 +37,8 @@ module Hue
     def bridges
       @bridges ||= begin
         bs = []
-        easy = Curl::Easy.new
-        easy.follow_location = true
-        easy.max_redirects = 10
-        easy.url = 'https://discovery.meethue.com/'
-        easy.perform
-        JSON(easy.body).each do |hash|
-          bs << Bridge.new(self, hash)
-        end
+        discovery_mdns(bs) if @use_mdns
+        discovery_meethue(bs) if bs.empty?
         bs
       end
     end
@@ -130,6 +126,33 @@ module Hue
       json['bridge_id']
     rescue
       return nil
+    end
+
+    def discovery_mdns(bs)
+      resolver = Resolv::MDNS.new
+      resolver.timeouts = 10
+
+      resolver.each_resource("_hue._tcp.local", Resolv::DNS::Resource::IN::PTR) do |bridge_ptr|
+        bridge_target = resolver.getresource(bridge_ptr.name, Resolv::DNS::Resource::IN::SRV).target
+
+        bridge_hash = {
+        'id' => resolver.getresource(bridge_ptr.name, Resolv::DNS::Resource::IN::TXT).strings[0].split('=')[1],
+        'internalipaddress' => resolver.getresource(bridge_target, Resolv::DNS::Resource::IN::A).address
+        }
+
+        bs << Bridge.new(self, bridge_hash)
+      end
+    end
+
+    def discovery_meethue(bs)
+      easy = Curl::Easy.new
+      easy.follow_location = true
+      easy.max_redirects = 10
+      easy.url = 'https://discovery.meethue.com/'
+      easy.perform
+      JSON(easy.body).each do |hash|
+        bs << Bridge.new(self, hash)
+      end
     end
 
     def get_error(error)
