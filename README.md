@@ -1,8 +1,5 @@
 # Hue
 
-[![Gem Version](https://img.shields.io/gem/v/hue.svg)](http://rubygems.org/gems/hue)
-[![Build Status](https://github.com/soffes/hue/workflows/Tests/badge.svg)](https://github.com/soffes/hue/actions)
-
 Work with Philips Hue light bulbs from Ruby.
 
 
@@ -80,7 +77,3 @@ group.new? # => false
 # Destroying groups
 client.groups.last.destroy!
 ```
-
-## Contributing
-
-See the [contributing guide](Contributing.markdown).
