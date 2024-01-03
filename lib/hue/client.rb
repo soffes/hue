@@ -25,7 +25,7 @@ module Hue
     def bridge
       @bridge_id ||= find_bridge_id
       bridge = if @bridge_id
-        bridges.select { |b| b.id == @bridge_id }.first
+        bridges.find { |b| b.id == @bridge_id }
       else
         bridges.first
       end
@@ -52,7 +52,7 @@ module Hue
 
     def light(id)
       id = id.to_s
-      lights.select { |l| l.id == id }.first
+      lights.find { |l| l.id == id }
     end
 
     def groups
@@ -63,7 +63,7 @@ module Hue
       return Group.new(self, bridge) if id.nil?
 
       id = id.to_s
-      groups.select { |g| g.id == id }.first
+      groups.find { |g| g.id == id }
     end
 
     def scenes
@@ -72,7 +72,7 @@ module Hue
 
     def scene(id)
       id = id.to_s
-      scenes.select { |s| s.id == id }.first
+      scenes.find { |s| s.id == id }
     end
 
     private
@@ -93,7 +93,7 @@ module Hue
         response = response.first
       end
 
-      if error = response["error"]
+      if (error = response["error"])
         raise get_error(error)
       end
 
@@ -109,11 +109,11 @@ module Hue
       http = Net::HTTP.new(uri.host)
       response = JSON(http.request_post(uri.path, body).body).first
 
-      if error = response["error"]
+      if (error = response["error"])
         raise get_error(error)
       end
 
-      if @username = response["success"]["username"]
+      if (@username = response["success"]["username"])
         File.write(File.expand_path("~/.hue"), JSON.dump({username: @username}))
       end
     end

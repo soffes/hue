@@ -98,7 +98,7 @@ module Hue
     end
 
     def name=(new_name)
-      unless (1..32).include?(new_name.length)
+      unless (1..32).cover?(new_name.length)
         raise InvalidValueForParameter, "name must be between 1 and 32 characters."
       end
 
@@ -132,7 +132,7 @@ module Hue
       body = translate_keys(attributes, STATE_KEYS_MAP)
 
       # Add transition
-      body.merge!({transitiontime: transition}) if transition
+      body[:transitiontime] = transition if transition
 
       uri = URI.parse("#{base_url}/state")
       http = Net::HTTP.new(uri.host)
