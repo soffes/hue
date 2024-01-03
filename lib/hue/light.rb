@@ -1,3 +1,5 @@
+require 'color_conversion'
+
 module Hue
   class Light
     include TranslateKeys
@@ -21,13 +23,13 @@ module Hue
     # Both 0 and 65535 are red, 25500 is green and 46920 is blue.
     attr_reader :hue
 
-    # Saturation of the light. 255 is the most saturated (colored)
+    # Saturation of the light. 254 is the most saturated (colored)
     # and 0 is the least saturated (white).
     attr_reader :saturation
 
     # Brightness of the light. This is a scale from the minimum
     # brightness the light is capable of, 0, to the maximum capable
-    # brightness, 255. Note a brightness of 0 is not off.
+    # brightness, 254. Note a brightness of 0 is not off.
     attr_reader :brightness
 
     # The x coordinate of a color in CIE color space. Between 0 and 1.
@@ -138,6 +140,28 @@ module Hue
     def refresh
       json = JSON(Net::HTTP.get(URI.parse(base_url)))
       unpack(json)
+    end
+
+    def hex
+      ColorConversion::Color.new(h: hue, s: saturation, b: brightness).hex
+    end
+
+    def hex=(hex)
+      hex = "##{hex}" unless hex.start_with?('#')
+      hsb = ColorConversion::Color.new(hex).hsb
+
+      # Map values from standard HSB to what Hue wants and update state
+      state = {
+        hue: ((hsb[:h].to_f / 360.0) * 65535.0).to_i,
+        saturation: ((hsb[:s].to_f / 100.0) * 254.0).to_i,
+        brightness: ((hsb[:b].to_f / 100.0) * 254.0).to_i
+      }
+
+      set_state(state)
+
+      @hue = state[:hue]
+      @saturation = state[:saturation]
+      @brightness = state[:brightness]
     end
 
   private
