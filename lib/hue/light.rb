@@ -1,13 +1,8 @@
-require 'color_conversion'
-
 module Hue
   class Light
     include TranslateKeys
     include EditableState
 
-    HUE_RANGE = 0..65535
-    SATURATION_RANGE = 0..255
-    BRIGHTNESS_RANGE = 0..255
     COLOR_TEMPERATURE_RANGE = 153..500
 
     # Unique identification number.
@@ -140,28 +135,6 @@ module Hue
     def refresh
       json = JSON(Net::HTTP.get(URI.parse(base_url)))
       unpack(json)
-    end
-
-    def hex
-      ColorConversion::Color.new(h: hue, s: saturation, b: brightness).hex
-    end
-
-    def hex=(hex)
-      hex = "##{hex}" unless hex.start_with?('#')
-      hsb = ColorConversion::Color.new(hex).hsb
-
-      # Map values from standard HSB to what Hue wants and update state
-      state = {
-        hue: ((hsb[:h].to_f / 360.0) * 65535.0).to_i,
-        saturation: ((hsb[:s].to_f / 100.0) * 254.0).to_i,
-        brightness: ((hsb[:b].to_f / 100.0) * 254.0).to_i
-      }
-
-      set_state(state)
-
-      @hue = state[:hue]
-      @saturation = state[:saturation]
-      @brightness = state[:brightness]
     end
 
   private
