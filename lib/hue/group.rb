@@ -17,13 +17,13 @@ module Hue
     # Both 0 and 65535 are red, 25500 is green and 46920 is blue.
     attr_accessor :hue
 
-    # Saturation of the group. 255 is the most saturated (colored)
+    # Saturation of the group. 254 is the most saturated (colored)
     # and 0 is the least saturated (white).
     attr_accessor :saturation
 
     # Brightness of the group. This is a scale from the minimum
     # brightness the group is capable of, 0, to the maximum capable
-    # brightness, 255. Note a brightness of 0 is not off.
+    # brightness, 254. Note a brightness of 0 is not off.
     attr_accessor :brightness
 
     # The x coordinate of a color in CIE color space. Between 0 and 1.

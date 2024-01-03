@@ -3,9 +3,6 @@ module Hue
     include TranslateKeys
     include EditableState
 
-    HUE_RANGE = 0..65535
-    SATURATION_RANGE = 0..255
-    BRIGHTNESS_RANGE = 0..255
     COLOR_TEMPERATURE_RANGE = 153..500
 
     # Unique identification number.
@@ -21,13 +18,13 @@ module Hue
     # Both 0 and 65535 are red, 25500 is green and 46920 is blue.
     attr_reader :hue
 
-    # Saturation of the light. 255 is the most saturated (colored)
+    # Saturation of the light. 254 is the most saturated (colored)
     # and 0 is the least saturated (white).
     attr_reader :saturation
 
     # Brightness of the light. This is a scale from the minimum
     # brightness the light is capable of, 0, to the maximum capable
-    # brightness, 255. Note a brightness of 0 is not off.
+    # brightness, 254. Note a brightness of 0 is not off.
     attr_reader :brightness
 
     # The x coordinate of a color in CIE color space. Between 0 and 1.
