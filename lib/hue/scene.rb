@@ -24,19 +24,17 @@ module Hue
     end
 
     def lights
-      @lights ||= begin
-        @light_ids.map do |light_id|
-          @client.light(light_id)
-        end
+      @lights ||= @light_ids.map do |light_id|
+        @client.light(light_id)
       end
     end
 
     private
 
     SCENE_KEYS_MAP = {
-      :name => :name,
-      :light_ids => :lights,
-      :active => :active,
+      name: :name,
+      light_ids: :lights,
+      active: :active
     }
 
     def unpack(data)

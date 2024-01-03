@@ -46,21 +46,21 @@ module Hue
     # Current time stored on the bridge.
     def utc
       json = get_configuration
-      DateTime.parse(json['utc'])
+      DateTime.parse(json["utc"])
     end
 
     # Indicates whether the link button has been pressed within the last 30
     # seconds.
     def link_button_pressed?
       json = get_configuration
-      json['linkbutton']
+      json["linkbutton"]
     end
 
     # This indicates whether the bridge is registered to synchronize data with a
     # portal account.
     def has_portal_services?
       json = get_configuration
-      json['portalservices']
+      json["portalservices"]
     end
 
     def refresh
@@ -74,7 +74,7 @@ module Hue
     def lights
       @lights ||= begin
         json = JSON(Net::HTTP.get(URI.parse(base_url)))
-        json['lights'].map do |key, value|
+        json["lights"].map do |key, value|
           Light.new(@client, self, key, value)
         end
       end
@@ -84,7 +84,7 @@ module Hue
       uri = URI.parse("#{base_url}/lights")
       http = Net::HTTP.new(uri.host)
       response = http.request_post(uri.path, nil)
-      (response.body).first
+      response.body.first
     end
 
     def groups
@@ -105,27 +105,27 @@ module Hue
       end
     end
 
-  private
+    private
 
     KEYS_MAP = {
-      :id => :id,
-      :ip => :internalipaddress,
-      :name => :name,
-      :proxy_port => :proxyport,
-      :software_update => :swupdate,
-      :ip_whitelist => :whitelist,
-      :software_version => :swversion,
-      :proxy_address => :proxyaddress,
-      :mac_address => :macaddress,
-      :network_mask => :netmask,
-      :portal_services => :portalservices,
+      id: :id,
+      ip: :internalipaddress,
+      name: :name,
+      proxy_port: :proxyport,
+      software_update: :swupdate,
+      ip_whitelist: :whitelist,
+      software_version: :swversion,
+      proxy_address: :proxyaddress,
+      mac_address: :macaddress,
+      network_mask: :netmask,
+      portal_services: :portalservices
     }
 
     def unpack(hash)
       KEYS_MAP.each do |local_key, remote_key|
         value = hash[remote_key.to_s]
         next unless value
-        instance_variable_set("@#{local_key}", value)
+        instance_variable_set(:"@#{local_key}", value)
       end
     end
 

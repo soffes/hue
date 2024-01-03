@@ -1,6 +1,6 @@
-require 'net/http'
-require 'json'
-require 'resolv'
+require "net/http"
+require "json"
+require "resolv"
 
 module Hue
   class Client
@@ -23,11 +23,11 @@ module Hue
     end
 
     def bridge
-      @bridge_id = find_bridge_id unless @bridge_id
-      if @bridge_id
-        bridge = bridges.select { |b| b.id == @bridge_id }.first
+      @bridge_id ||= find_bridge_id
+      bridge = if @bridge_id
+        bridges.select { |b| b.id == @bridge_id }.first
       else
-        bridge = bridges.first
+        bridges.first
       end
       raise NoBridgeFound unless bridge
       bridge
@@ -78,12 +78,12 @@ module Hue
     private
 
     def find_username
-      return ENV['HUE_USERNAME'] if ENV['HUE_USERNAME']
+      return ENV["HUE_USERNAME"] if ENV["HUE_USERNAME"]
 
-      json = JSON(File.read(File.expand_path('~/.hue')))
-      json['username']
+      json = JSON(File.read(File.expand_path("~/.hue")))
+      json["username"]
     rescue
-      return nil
+      nil
     end
 
     def validate_user
@@ -93,38 +93,38 @@ module Hue
         response = response.first
       end
 
-      if error = response['error']
+      if error = response["error"]
         raise get_error(error)
       end
 
-      response['success']
+      response["success"]
     end
 
     def register_user
       body = JSON.dump({
-        devicetype: 'Ruby'
+        devicetype: "Ruby"
       })
 
       uri = URI.parse("http://#{bridge.ip}/api")
       http = Net::HTTP.new(uri.host)
       response = JSON(http.request_post(uri.path, body).body).first
 
-      if error = response['error']
+      if error = response["error"]
         raise get_error(error)
       end
 
-      if @username = response['success']['username']
-        File.write(File.expand_path('~/.hue'), JSON.dump({username: @username}))
+      if @username = response["success"]["username"]
+        File.write(File.expand_path("~/.hue"), JSON.dump({username: @username}))
       end
     end
 
     def find_bridge_id
-      return ENV['HUE_BRIDGE_ID'] if ENV['HUE_BRIDGE_ID']
+      return ENV["HUE_BRIDGE_ID"] if ENV["HUE_BRIDGE_ID"]
 
-      json = JSON(File.read(File.expand_path('~/.hue')))
-      json['bridge_id']
+      json = JSON(File.read(File.expand_path("~/.hue")))
+      json["bridge_id"]
     rescue
-      return nil
+      nil
     end
 
     def discovery_mdns(bs)
@@ -135,8 +135,8 @@ module Hue
         bridge_target = resolver.getresource(bridge_ptr.name, Resolv::DNS::Resource::IN::SRV).target
 
         bridge_hash = {
-        'id' => resolver.getresource(bridge_ptr.name, Resolv::DNS::Resource::IN::TXT).strings[0].split('=')[1],
-        'internalipaddress' => resolver.getresource(bridge_target, Resolv::DNS::Resource::IN::A).address
+          "id" => resolver.getresource(bridge_ptr.name, Resolv::DNS::Resource::IN::TXT).strings[0].split("=")[1],
+          "internalipaddress" => resolver.getresource(bridge_target, Resolv::DNS::Resource::IN::A).address
         }
 
         bs << Bridge.new(self, bridge_hash)
@@ -144,9 +144,9 @@ module Hue
     end
 
     def discovery_meethue(bs)
-      uri = URI('https://discovery.meethue.com/')
+      uri = URI("https://discovery.meethue.com/")
       response = Net::HTTP.get(uri)
-      
+
       JSON(response).each do |hash|
         bs << Bridge.new(self, hash)
       end
@@ -154,8 +154,8 @@ module Hue
 
     def get_error(error)
       # Find error class and return instance
-      klass = Hue::ERROR_MAP[error['type']] || UnknownError unless klass
-      klass.new(error['description'])
+      klass ||= Hue::ERROR_MAP[error["type"]] || UnknownError
+      klass.new(error["description"])
     end
   end
 end
