@@ -2,13 +2,28 @@ name: Tests
 on: [push]
 jobs:
   test:
-    name: Test Swift Package
+    name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
-      - name: 'Install Dependencies'
-        run: sudo apt-get install libcurl4-openssl-dev && gem install bundler && bundle install
-      - name: 'Test'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Test
         run: bundle exec rake test
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Test
+        run: bundle exec rake standard

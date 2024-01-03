@@ -58,16 +58,14 @@ module Hue
     end
 
     def lights
-      @lights ||= begin
-        @light_ids.map do |light_id|
-          @client.light(light_id)
-        end
+      @lights ||= @light_ids.map do |light_id|
+        @client.light(light_id)
       end
     end
 
     def name=(name)
-      resp = set_group_state({:name => name})
-      @name = new? ? name : resp[0]['success']["/groups/#{id}/name"]
+      resp = set_group_state({name: name})
+      @name = new? ? name : resp[0]["success"]["/groups/#{id}/name"]
     end
 
     def lights=(light_ids)
@@ -78,17 +76,17 @@ module Hue
       @light_ids = light_ids.uniq
       @lights = nil # resets the memoization
 
-      set_group_state({:lights => @light_ids})
+      set_group_state({lights: @light_ids})
     end
 
     def scene=(scene)
       scene_id = scene.is_a?(Scene) ? scene.id : scene
-      set_group_state({:scene => scene_id})
+      set_group_state({scene: scene_id})
     end
 
     def <<(light_id)
       @light_ids << light_id
-      set_group_state({:lights => @light_ids})
+      set_group_state({lights: @light_ids})
     end
     alias_method :add_light, :<<
 
@@ -120,8 +118,8 @@ module Hue
 
     def create!
       body = {
-        :name => @name,
-        :lights => @light_ids,
+        name: @name,
+        lights: @light_ids
       }
 
       uri = URI.parse("http://#{@bridge.ip}/api/#{@client.username}/groups")
@@ -129,7 +127,7 @@ module Hue
       response = http.request_post(uri.path, JSON.dump(body))
       json = JSON(response.body)
 
-      @id = json[0]['success']['id']
+      @id = json[0]["success"]["id"]
     end
 
     def destroy!
@@ -137,7 +135,7 @@ module Hue
       http = Net::HTTP.new(uri.host)
       response = http.delete(uri.path)
       json = JSON(response.body)
-      @id = nil if json[0]['success']
+      @id = nil if json[0]["success"]
     end
 
     def new?
@@ -147,22 +145,22 @@ module Hue
     private
 
     GROUP_KEYS_MAP = {
-      :name => :name,
-      :light_ids => :lights,
-      :type => :type,
-      :state => :action
+      name: :name,
+      light_ids: :lights,
+      type: :type,
+      state: :action
     }
 
     STATE_KEYS_MAP = {
-      :on => :on,
-      :brightness => :bri,
-      :hue => :hue,
-      :saturation => :sat,
-      :xy => :xy,
-      :color_temperature => :ct,
-      :alert => :alert,
-      :effect => :effect,
-      :color_mode => :colormode,
+      on: :on,
+      brightness: :bri,
+      hue: :hue,
+      saturation: :sat,
+      xy: :xy,
+      color_temperature: :ct,
+      alert: :alert,
+      effect: :effect,
+      color_mode: :colormode
     }
 
     def unpack(data)
@@ -170,7 +168,7 @@ module Hue
 
       unless new?
         unpack_hash(@state, STATE_KEYS_MAP)
-        @x, @y = @state['xy']
+        @x, @y = @state["xy"]
       end
     end
 

@@ -14,7 +14,7 @@ module Hue
       map.each do |local_key, remote_key|
         value = hash[remote_key.to_s]
         next unless value
-        instance_variable_set("@#{local_key}", value)
+        instance_variable_set(:"@#{local_key}", value)
       end
     end
   end

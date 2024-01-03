@@ -98,21 +98,21 @@ module Hue
     end
 
     def name=(new_name)
-      unless (1..32).include?(new_name.length)
-        raise InvalidValueForParameter, 'name must be between 1 and 32 characters.'
+      unless (1..32).cover?(new_name.length)
+        raise InvalidValueForParameter, "name must be between 1 and 32 characters."
       end
 
       body = {
-        :name => new_name
+        name: new_name
       }
 
       uri = URI.parse(base_url)
       http = Net::HTTP.new(uri.host)
       response = http.request_put(uri.path, JSON.dump(body))
       response = JSON(response.body).first
-      if response['success']
+      if response["success"]
         @name = new_name
-      # else
+        # else
         # TODO: Error
       end
     end
@@ -121,7 +121,7 @@ module Hue
     # always returns true, functionality will be added in a future
     # patch.
     def reachable?
-      @state['reachable']
+      @state["reachable"]
     end
 
     # @param transition The duration of the transition from the light’s current
@@ -132,7 +132,7 @@ module Hue
       body = translate_keys(attributes, STATE_KEYS_MAP)
 
       # Add transition
-      body.merge!({:transitiontime => transition}) if transition
+      body[:transitiontime] = transition if transition
 
       uri = URI.parse("#{base_url}/state")
       http = Net::HTTP.new(uri.host)
@@ -146,37 +146,37 @@ module Hue
       unpack(json)
     end
 
-  private
+    private
 
     KEYS_MAP = {
-      :state => :state,
-      :type => :type,
-      :name => :name,
-      :model => :modelid,
-      :software_version => :swversion,
-      :point_symbol => :pointsymbol,
-      :uid => :uniqueid,
-      :capabilities => :capabilities,
-      :config => :config
+      state: :state,
+      type: :type,
+      name: :name,
+      model: :modelid,
+      software_version: :swversion,
+      point_symbol: :pointsymbol,
+      uid: :uniqueid,
+      capabilities: :capabilities,
+      config: :config
     }
 
     STATE_KEYS_MAP = {
-      :on => :on,
-      :brightness => :bri,
-      :hue => :hue,
-      :saturation => :sat,
-      :xy => :xy,
-      :color_temperature => :ct,
-      :alert => :alert,
-      :effect => :effect,
-      :color_mode => :colormode,
-      :reachable => :reachable,
+      on: :on,
+      brightness: :bri,
+      hue: :hue,
+      saturation: :sat,
+      xy: :xy,
+      color_temperature: :ct,
+      alert: :alert,
+      effect: :effect,
+      color_mode: :colormode,
+      reachable: :reachable
     }
 
     def unpack(hash)
       unpack_hash(hash, KEYS_MAP)
       unpack_hash(@state, STATE_KEYS_MAP)
-      @x, @y = @state['xy']
+      @x, @y = @state["xy"]
     end
 
     def base_url

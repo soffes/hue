@@ -1,4 +1,4 @@
-require 'color_conversion'
+require "color_conversion"
 
 module Hue
   module EditableState
@@ -21,21 +21,21 @@ module Hue
     # Turn the light on if it's off and vice versa
     def toggle!
       if @on
-        self.off!
+        off!
       else
-        self.on!
+        on!
       end
     end
 
-    %w{on hue saturation brightness color_temperature alert effect}.each do |key|
-      define_method "#{key}=".to_sym do |value|
+    %w[on hue saturation brightness color_temperature alert effect].each do |key|
+      define_method :"#{key}=" do |value|
         set_state({key.to_sym => value})
-        instance_variable_set("@#{key}".to_sym, value)
+        instance_variable_set(:"@#{key}", value)
       end
     end
 
     def set_xy(x, y)
-      set_state({:xy => [x, y]})
+      set_state({xy: [x, y]})
       @x, @y = x, y
     end
 
@@ -44,7 +44,7 @@ module Hue
     end
 
     def hex=(hex)
-      hex = "##{hex}" unless hex.start_with?('#')
+      hex = "##{hex}" unless hex.start_with?("#")
       hsb = ColorConversion::Color.new(hex).hsb
 
       # Map values from standard HSB to what Hue wants and update state
