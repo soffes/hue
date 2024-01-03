@@ -1,7 +1,6 @@
 require 'net/http'
 require 'json'
 require 'resolv'
-require 'curb'
 
 module Hue
   class Client
@@ -145,12 +144,10 @@ module Hue
     end
 
     def discovery_meethue(bs)
-      easy = Curl::Easy.new
-      easy.follow_location = true
-      easy.max_redirects = 10
-      easy.url = 'https://discovery.meethue.com/'
-      easy.perform
-      JSON(easy.body).each do |hash|
+      uri = URI('https://discovery.meethue.com/')
+      response = Net::HTTP.get(uri)
+      
+      JSON(response).each do |hash|
         bs << Bridge.new(self, hash)
       end
     end
