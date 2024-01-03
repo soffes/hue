@@ -22,6 +22,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'thor'
   spec.add_dependency 'json'
   spec.add_dependency 'color_conversion'
-  spec.add_development_dependency 'minitest', '~> 5.0'
-  spec.add_development_dependency 'webmock'
 end
