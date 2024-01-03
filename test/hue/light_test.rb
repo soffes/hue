@@ -23,7 +23,7 @@ class LightTest < Minitest::Test
   end
 
   def test_toggle_while_off
-    client = Hue::Client.new
+    client = Hue::Client.new(use_mdns: false)
     light = Hue::Light.new(client, client.bridge, 0, {"state" => {}})
     assert_equal false, light.on?
 
@@ -33,7 +33,7 @@ class LightTest < Minitest::Test
   end
 
   def test_toggle_while_on
-    client = Hue::Client.new
+    client = Hue::Client.new(use_mdns: false)
     light = Hue::Light.new(client, client.bridge, 0, {"state" => {'on' => true}})
     assert_equal true, light.on?
 
