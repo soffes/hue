@@ -1,4 +1,5 @@
 require "net/http"
+require "openssl"
 require "json"
 require "resolv"
 
@@ -87,7 +88,9 @@ module Hue
     end
 
     def validate_user
-      response = JSON(Net::HTTP.get(URI.parse("http://#{bridge.ip}/api/#{@username}")))
+      uri = URI.parse("https://#{bridge.ip}/api/#{@username}")
+      http = HttpClient.create(uri)
+      response = JSON(http.get(uri.path).body)
 
       if response.is_a? Array
         response = response.first
@@ -105,8 +108,8 @@ module Hue
         devicetype: "Ruby"
       })
 
-      uri = URI.parse("http://#{bridge.ip}/api")
-      http = Net::HTTP.new(uri.host)
+      uri = URI.parse("https://#{bridge.ip}/api")
+      http = HttpClient.create(uri)
       response = JSON(http.request_post(uri.path, body).body).first
 
       if (error = response["error"])

@@ -107,7 +107,7 @@ module Hue
       }
 
       uri = URI.parse(base_url)
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.request_put(uri.path, JSON.dump(body))
       response = JSON(response.body).first
       if response["success"]
@@ -135,14 +135,16 @@ module Hue
       body[:transitiontime] = transition if transition
 
       uri = URI.parse("#{base_url}/state")
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.request_put(uri.path, JSON.dump(body))
       JSON(response.body)
     end
 
     # Refresh the state of the lamp
     def refresh
-      json = JSON(Net::HTTP.get(URI.parse(base_url)))
+      uri = URI.parse(base_url)
+      http = HttpClient.create(uri)
+      json = JSON(http.get(uri.path).body)
       unpack(json)
     end
 
@@ -180,7 +182,7 @@ module Hue
     end
 
     def base_url
-      "http://#{@bridge.ip}/api/#{@client.username}/lights/#{id}"
+      "https://#{@bridge.ip}/api/#{@client.username}/lights/#{id}"
     end
   end
 end

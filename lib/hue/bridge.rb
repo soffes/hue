@@ -73,7 +73,9 @@ module Hue
 
     def lights
       @lights ||= begin
-        json = JSON(Net::HTTP.get(URI.parse(base_url)))
+        uri = URI.parse(base_url)
+        http = HttpClient.create(uri)
+        json = JSON(http.get(uri.path).body)
         json["lights"].map do |key, value|
           Light.new(@client, self, key, value)
         end
@@ -82,14 +84,16 @@ module Hue
 
     def add_lights
       uri = URI.parse("#{base_url}/lights")
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.request_post(uri.path, nil)
       response.body.first
     end
 
     def groups
       @groups ||= begin
-        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/groups")))
+        uri = URI.parse("#{base_url}/groups")
+        http = HttpClient.create(uri)
+        json = JSON(http.get(uri.path).body)
         json.map do |id, data|
           Group.new(@client, self, id, data)
         end
@@ -98,7 +102,9 @@ module Hue
 
     def scenes
       @scenes ||= begin
-        json = JSON(Net::HTTP.get(URI.parse("#{base_url}/scenes")))
+        uri = URI.parse("#{base_url}/scenes")
+        http = HttpClient.create(uri)
+        json = JSON(http.get(uri.path).body)
         json.map do |id, data|
           Scene.new(@client, self, id, data)
         end
@@ -130,11 +136,13 @@ module Hue
     end
 
     def get_configuration
-      JSON(Net::HTTP.get(URI.parse("#{base_url}/config")))
+      uri = URI.parse("#{base_url}/config")
+      http = HttpClient.create(uri)
+      JSON(http.get(uri.path).body)
     end
 
     def base_url
-      "http://#{ip}/api/#{@client.username}"
+      "https://#{ip}/api/#{@client.username}"
     end
   end
 end

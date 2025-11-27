@@ -95,7 +95,7 @@ module Hue
       body = translate_keys(attributes, GROUP_KEYS_MAP)
 
       uri = URI.parse(base_url)
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.request_put(uri.path, JSON.dump(body))
       JSON(response.body)
     end
@@ -105,13 +105,15 @@ module Hue
       body = translate_keys(attributes, STATE_KEYS_MAP)
 
       uri = URI.parse("#{base_url}/action")
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.request_put(uri.path, JSON.dump(body))
       JSON(response.body)
     end
 
     def refresh
-      json = JSON(Net::HTTP.get(URI.parse(base_url)))
+      uri = URI.parse(base_url)
+      http = HttpClient.create(uri)
+      json = JSON(http.get(uri.path).body)
       unpack(json)
       @lights = nil
     end
@@ -122,8 +124,8 @@ module Hue
         lights: @light_ids
       }
 
-      uri = URI.parse("http://#{@bridge.ip}/api/#{@client.username}/groups")
-      http = Net::HTTP.new(uri.host)
+      uri = URI.parse("https://#{@bridge.ip}/api/#{@client.username}/groups")
+      http = HttpClient.create(uri)
       response = http.request_post(uri.path, JSON.dump(body))
       json = JSON(response.body)
 
@@ -132,7 +134,7 @@ module Hue
 
     def destroy!
       uri = URI.parse(base_url)
-      http = Net::HTTP.new(uri.host)
+      http = HttpClient.create(uri)
       response = http.delete(uri.path)
       json = JSON(response.body)
       @id = nil if json[0]["success"]
@@ -173,7 +175,7 @@ module Hue
     end
 
     def base_url
-      "http://#{@bridge.ip}/api/#{@client.username}/groups/#{id}"
+      "https://#{@bridge.ip}/api/#{@client.username}/groups/#{id}"
     end
   end
 end
