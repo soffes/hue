@@ -1,5 +1,6 @@
 require "hue/version"
 require "hue/errors"
+require "hue/http_client"
 require "hue/client"
 require "hue/bridge"
 require "hue/editable_state"

@@ -7,9 +7,9 @@ class ClientTest < Minitest::Test
     stub_request(:get, "https://discovery.meethue.com/")
       .to_return(body: '[{"id":"ffa57b3b257200065704","internalipaddress":"192.168.0.1"},{"id":"63c2fc01391276a319f9","internalipaddress":"192.168.0.2"}]')
 
-    stub_request(:post, "http://192.168.0.1/api").to_return(body: '[{"success":{"username":"ruby"}}]')
-    stub_request(:get, %r{http://192.168.0.1/api/*}).to_return(body: '[{"success":true}]')
-    stub_request(:get, %r{http://192.168.0.2/api/*}).to_return(body: '[{"success":true}]')
+    stub_request(:post, "https://192.168.0.1/api").to_return(body: '[{"success":{"username":"ruby"}}]')
+    stub_request(:get, %r{https://192.168.0.1/api/*}).to_return(body: '[{"success":true}]')
+    stub_request(:get, %r{https://192.168.0.2/api/*}).to_return(body: '[{"success":true}]')
   end
 
   def test_with_bridge_id

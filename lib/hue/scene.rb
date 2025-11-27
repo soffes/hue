@@ -42,7 +42,7 @@ module Hue
     end
 
     def base_url
-      "http://#{@bridge.ip}/api/#{@client.username}/scenes/#{id}"
+      "https://#{@bridge.ip}/api/#{@client.username}/scenes/#{id}"
     end
   end
 end
